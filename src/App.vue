@@ -13,7 +13,7 @@
 
 		  <Scene>
 
-			<PointLight :position="{ y: 50 * mousePos.y, z: 50 * mousePos.x }" :intensity="Math.abs(mousePos.y / 10)" />
+			<PointLight :position="{ y: 50 * mousePos.y, z: -50 * mousePos.x }" :intensity="Math.abs(mousePos.y / 10)" />
 			<PointLight 
 				:position="{ y: -50 * mousePos.y, z: -50 * mousePos.x }" 
 				color="#FF0000"
@@ -28,9 +28,16 @@
 			  
 				<!-- <LambertMaterial /> -->
 				<!-- <MatcapMaterial name="686E55_353C2F_869B7F_444434" /> -->
-				<SubSurfaceMaterial :uniform="{ thicknessColor: '#ffffff' }" :transparent="true" :opacity="0.1" />
+				<SubSurfaceMaterial />
 
 			</Box>
+
+			<EffectComposer>
+				<RenderPass />
+				<UnrealBloomPass :strength="0.4" />
+				<HalftonePass :radius="Math.abs(mousePos.x * 30)" :scatter="0" />
+				<BokehPass :maxblur="0.01"/>
+			</EffectComposer>
 
 		  </Scene>
 
@@ -77,8 +84,8 @@ function mousemoveHandler( event ){
 	const { x, y } = useComputedPos(event)
 	
 	// update rotation EVENEMENTIEL
-	mousePos.x = x;
-	mousePos.y = y;
+	mousePos.x = new Number(x);
+	mousePos.y = new Number(y);
 
 	mesh.value.rotation.y += y / 35
 	mesh.value.rotation.x += x / 35
