@@ -78,8 +78,6 @@ const mainWrapper = ref(null)
 const rendererElement = ref(null)
 const boxOneElement = ref(null)
 
-const mesh = ref()
-
 const { x: mouseX, y: mouseY } = useMouseNormalised(mainWrapper)
 
 onMounted(() => {
@@ -93,10 +91,8 @@ onMounted(() => {
 
 function updateMesh(){
 
-	mesh.value = boxOneElement.value.mesh
-
-	mesh.value.rotation.y += 0.0008
-	mesh.value.rotation.x -= 0.0003
+	boxOneElement.value.mesh.rotation.y += 0.0008
+	boxOneElement.value.mesh.rotation.x -= 0.0003
 
 }
 
