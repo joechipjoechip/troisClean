@@ -96,7 +96,7 @@ function updateMesh(){
 	mesh.value = boxOneElement.value.mesh
 
 	mesh.value.rotation.y += 0.0008
-    mesh.value.rotation.x -= 0.0003
+	mesh.value.rotation.x -= 0.0003
 
 }
 
