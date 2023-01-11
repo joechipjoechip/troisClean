@@ -4,14 +4,14 @@
 
 		<Renderer  
 			ref="rendererElement"
-		  	antialias 
-		  	resize="window"
+			antialias 
+			resize="window"
 		>
-		  <!-- :orbit-ctrl="{ enableDamping: true }"  -->
+		<!-- :orbit-ctrl="{ enableDamping: true }"  -->
 
-		  <Camera :position="{ z: 10 }" />
+		<Camera :position="{ z: 10 }" />
 
-		  <Scene>
+		<Scene>
 
 			<PointLight 
 				:position="{ 
@@ -60,7 +60,7 @@
 				
 			</EffectComposer>
 
-		  </Scene>
+		</Scene>
 
 		</Renderer>
 
@@ -82,10 +82,10 @@ const { x: mouseX, y: mouseY } = useMouseNormalised(mainWrapper)
 
 onMounted(() => {
 
-  // update rotation PERMANENT
-  rendererElement.value.onBeforeRender(() => {
-    updateMesh();
-  })
+	// update rotation PERMANENT
+	rendererElement.value.onBeforeRender(() => {
+		updateMesh();
+	})
 
 })
 
