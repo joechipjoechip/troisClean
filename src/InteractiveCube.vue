@@ -54,9 +54,10 @@
 
 				<EffectComposer>
 
-					<!-- <UnrealBloomPass 
-						:strength="0.6" 
-					/>  -->
+					<UnrealBloomPass 
+						:strength="2" 
+						:alpha="true"
+					/> 
 
 
 					<BokehPass 
@@ -76,11 +77,11 @@
 
 <script setup>
 
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, reactive } from 'vue'
 
 import { useMouseNormalised } from "./composables/computePos"
 
-const mainWrapper = ref(null)
+// const mainWrapper = ref(null)
 const rendererElement = ref(null)
 const boxOneElement = ref(null)
 
