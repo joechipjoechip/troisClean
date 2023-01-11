@@ -1,11 +1,11 @@
 <template>
 
-	<div @mousemove="mousemoveHandler" class="wrapper">
+	<div ref="mainWrapper" class="wrapper">
 
-		<Renderer 
-		  ref="rendererMainWrapper" 
-		  antialias 
-		  resize="window"
+		<Renderer  
+			ref="rendererElement"
+		  	antialias 
+		  	resize="window"
 		>
 		  <!-- :orbit-ctrl="{ enableDamping: true }"  -->
 
@@ -13,30 +13,51 @@
 
 		  <Scene>
 
-			<PointLight :position="{ y: 50 * mousePos.y, z: -50 * mousePos.x }" :intensity="Math.abs(mousePos.y / 10)" />
 			<PointLight 
-				:position="{ y: -50 * mousePos.y, z: -50 * mousePos.x }" 
+				:position="{ 
+					x: -50 * mouseX,
+					z: -1
+				}" 
+				:intensity="Math.abs(mouseY / -10)" 
+			/>
+
+			<PointLight 
+				:position="{ 
+					x: -5 * mouseX,
+					y: -5 * mouseY
+				}" 
+				:intensity="Math.abs(mouseX / 10) * 1.7"
 				color="#FF0000"
-				:intensity="Math.abs(mousePos.x / 10) * 1.7"
 			/>
 
 			<Box 
 				:size="1" 
 				ref="boxOneElement" 
-				:rotation="{ y: Math.PI / 4, z: Math.PI / 4 }"
+				:rotation="{ 
+					x: Math.PI / 4 + mouseX,
+					y: Math.PI / 4 + mouseY 
+				}"
+				:position="{ 
+					z: 3 * Math.abs(mouseX) 
+				}" 
 			>
-			  
-				<!-- <LambertMaterial /> -->
-				<!-- <MatcapMaterial name="686E55_353C2F_869B7F_444434" /> -->
+
 				<SubSurfaceMaterial />
 
 			</Box>
 
 			<EffectComposer>
+
 				<RenderPass />
-				<UnrealBloomPass :strength="0.4" />
-				<HalftonePass :radius="Math.abs(mousePos.x * 30)" :scatter="0" />
-				<BokehPass :maxblur="0.01"/>
+
+				<UnrealBloomPass 
+					:strength="0.6" 
+				/>
+
+				<BokehPass 
+					:maxblur="0.008"
+				/>
+				
 			</EffectComposer>
 
 		  </Scene>
@@ -49,22 +70,22 @@
 
 <script setup>
 
+import { ref, onMounted } from 'vue'
 
-import { ref, onMounted, reactive } from 'vue'
-// import { Box, Camera, LambertMaterial, PointLight, Renderer, Scene } from 'troisjs'
+import { useMouseNormalised } from "./composables/computePos"
 
-const rendererMainWrapper = ref(null)
+const mainWrapper = ref(null)
+const rendererElement = ref(null)
 const boxOneElement = ref(null)
-const renderSize = reactive({ width: window.innerWidth, height: window.innerHeight })
 
 const mesh = ref()
 
-const mousePos = reactive({x: 0, y: 0})
+const { x: mouseX, y: mouseY } = useMouseNormalised(mainWrapper)
 
 onMounted(() => {
 
   // update rotation PERMANENT
-  rendererMainWrapper.value.onBeforeRender(() => {
+  rendererElement.value.onBeforeRender(() => {
     updateMesh();
   })
 
@@ -76,58 +97,9 @@ function updateMesh(){
 
 	mesh.value.rotation.y += 0.0008
     mesh.value.rotation.x -= 0.0003
+
 }
 
-function mousemoveHandler( event ){
-
-	// normalise x, y
-	const { x, y } = useComputedPos(event)
-	
-	// update rotation EVENEMENTIEL
-	mousePos.x = new Number(x);
-	mousePos.y = new Number(y);
-
-	mesh.value.rotation.y += y / 35
-	mesh.value.rotation.x += x / 35
-  
-}
-
-function useComputedPos( input ){
-	// "input" is straight mousemove event
-
-	// @TODO : externalise as composable
-
-	if( input.touches?.[0] ){
-
-		const goodTouch = Array.from(input.touches).find(touch => touch.target.dataset.role === this.role);
-
-		return {
-			x: Math.min(1,
-				Math.max(
-					-1,
-					(((goodTouch.clientX - left) / width) - 0.5) * 2
-				)
-			),
-			y: Math.min(1,
-				Math.max(
-					-1,
-					(((goodTouch.clientY - top) / height) - 0.5) * -2
-				)
-			)
-		}
-
-
-	} else {
-
-		return {
-			x: (((input.offsetX + renderSize.width / 2) / renderSize.width) - 1) * 2,
-			y: (((input.offsetY + renderSize.height / 2) / renderSize.height) - 1) * -2
-		};
-
-	}
-
-	
-}
 
 </script>
 
