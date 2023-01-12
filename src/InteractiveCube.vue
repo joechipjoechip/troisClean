@@ -29,7 +29,7 @@
 						z: -10 * mouseY
 					}" 
 					:intensity="2" 
-					color="#FF0000"
+					color="#3100bb"
 				/>
 
 				<PointLight 
@@ -38,6 +38,7 @@
 						y: -5 * mouseY
 					}" 
 					:intensity="Math.abs(mouseX / 10) * 1.7"
+					color="#d797a8"
 				/>
 
 				<Box 
