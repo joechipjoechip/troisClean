@@ -31,7 +31,7 @@ const renderEnabled = ref(false)
 
 const rendererElementBoundings = reactive({})
 
-const enlargeMainWrapper = ref(false)
+const reduceItemSize = ref(false)
 
 const cameraDeltaY = ref(0)
 const { directions } = props.scrollSensitive ? useScroll(window) : { directions: {} }
@@ -111,8 +111,8 @@ watch(rendererElementBoundings, ( newVal ) => {
 // * * * * * Scroll Logic :
 if( props.scrollSensitive ){
 	
-	const deltaYforScroll = 8
-	const deltaYforScrollDuration = 0.35
+	const deltaYforScroll = 6
+	const deltaYforScrollDuration = 0.4
 
 	let tl = null
 
@@ -167,7 +167,7 @@ if( props.scrollSensitive ){
 			{
 				duration: tweenDuration, 
 				dynamicCameraY : destinationY,
-				ease: isStop ? "elastic" : "easeInOut",
+				ease: isStop ? "elastic" : "easeIn",
 
 				onUpdate: () => {
 					cameraDeltaY.value = animatedObject.dynamicCameraY
@@ -190,7 +190,7 @@ if( props.scrollSensitive ){
 function updateMesh(){
 
 	Object.keys(props.permanentRotationIncrement).forEach(key => {
-		return // disable when scroll logic is ok
+		// return // disable when scroll logic is ok
 		if( !["x", "y", "z"].includes(key) ){
 			return
 		}
@@ -220,12 +220,12 @@ function updateMesh(){
 				scroll : {{ directions }}
 			</div>
 
-			<button @click="enlargeMainWrapper = !enlargeMainWrapper">toggle main-cube-container width</button>
+			<button @click="reduceItemSize = !reduceItemSize">toggle main-cube-container width</button>
 		</p>
 	
 		<div ref="mainWrapper" 
 			class="main-wrapper"
-			:class="{ 'enlarged': enlargeMainWrapper }"
+			:class="{ 'reduced': reduceItemSize }"
 		>
 	
 			<Renderer  
@@ -244,7 +244,7 @@ function updateMesh(){
 						z: 10,
 						y: cameraDeltaY
 					}" 
-					:far="5000"
+					:far="50"
 					:lookAt="{ x: 0, y: 0, z: 0 }"
 				/>
 	
@@ -254,20 +254,19 @@ function updateMesh(){
 	
 					<PointLight 
 						:position="{ 
-							x: -50 * mouseX,
-							z: -10 * mouseY
+							x: 5 * cameraDeltaY / 100
 						}" 
-						:intensity="2" 
+						:intensity="1.5" 
 						color="#3100bb"
 					/>
 	
 					<PointLight 
 						:position="{ 
-							x: -5 * mouseX,
-							y: -5 * mouseY
+							x: 0.335,
+							y: 0.007,
 						}" 
-						:intensity="Math.abs(mouseX / 10) * 1.7"
-						color="#d797a8"
+						:intensity="0.2"
+						color="#FFff00"
 					/>
 	
 					<Box 
@@ -275,14 +274,22 @@ function updateMesh(){
 						ref="boxOneElement" 
 						:rotation="{ 
 							x: Math.PI / 2 + mouseX,
-							y: Math.PI / 4 + mouseY 
+							y: Math.PI / 4 + mouseY,
+							z: Math.PI / 8 + (cameraDeltaY / 100)
 						}"
-						:position="{ 
-							z: 3 * Math.abs(mouseX) 
-						}" 
 					>
 	
-						<SubSurfaceMaterial />
+						<!-- <SubSurfaceMaterial /> -->
+						<!-- <ToonMaterial /> -->
+						<SubSurfaceMaterial 
+							:uniform="{ 
+								thicknessColor: '#000000',
+								thicknessDistortion: 0.9,
+								thicknessAttenuation: 0.9,
+								transparent: true,
+								opacity: 0.1
+							}" 
+						/>
 	
 					</Box>
 	
@@ -336,17 +343,17 @@ function updateMesh(){
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		width: 60%;
-		height: 300px;
+		width: 100%;
+		height: 450px;
 		border: solid 1px rgb(131, 131, 131);
 		
 		color: currentColor;
 
 		transition: all 2s ease;
 
-		&.enlarged {
-			width: 100%;
-			height: 400px;
+		&.reduced {
+			width: 40%;
+			height: 200px;
 		}
 	 
 	}
