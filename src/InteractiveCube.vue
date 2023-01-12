@@ -12,9 +12,10 @@
 			class="renderer"
 			antialias
 			:alpha="true"
-			:width="rendererElementBoundings.width"
-			:height="rendererElementBoundings.height"
+			:width="new String(rendererElementBoundings.width)"
+			:height="new String(rendererElementBoundings.height)"
 		>
+		<!-- we use 'new String() constructor because only string are expected for theses attributes' -->
 		<!-- :orbit-ctrl="{ enableDamping: true }"  -->
 
 			<Camera :position="{ z: 10 }" :far="5000" />
@@ -139,11 +140,9 @@ function handleResize(){
 	// then : no direct assignation, instead, use .keys and put some values into
 	// like this :
 
-	rendererElementBoundings.width = new String(mainWrapper.value.getBoundingClientRect().width)
-	rendererElementBoundings.height = new String(mainWrapper.value.getBoundingClientRect().height)
+	rendererElementBoundings.width = mainWrapper.value.getBoundingClientRect().width
+	rendererElementBoundings.height = mainWrapper.value.getBoundingClientRect().height
 
-	// we use 'new String()' because the renderer canvas element (under the hood of TroisJS) 
-	// expects some Strings in attributes width and height (getBoundingClientRect() provides Numbers)
 }
 
 watch(rendererElementBoundings, ( newVal ) => {
