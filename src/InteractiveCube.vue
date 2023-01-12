@@ -120,6 +120,7 @@ function launchRendering(){
 			// onBeforeRender() is a specific event coming from TroisJS (not vue)
 			// https://troisjs.github.io/guide/core/renderer.html#events-api-v0-3
 			rendererElement.value.onBeforeRender(() => {
+				// "each three render frame : do this :"
 				updateMesh();
 			})
 
@@ -130,15 +131,14 @@ function launchRendering(){
 
 function handleResize(){
 	
-	// we use new String() because the renderer canvas element (under the hood) 
-	// expects some Strings (getBoundingClientRect() provides Numbers) in attributes width and height
-
-	// + we can't destructure or directly assign getBoundingClientRect() returned value to rendererElementBoundings, 
-	// ex : rendererElementBoundings = mainWrapper.value.getBoundingClientRect() // <- won't work
-	//   because our object rendererElementBoundings is a reactive() thing (and need to stay a reactive() thing)
+	// we can't destructure or directly assign getBoundingClientRect() returned value to rendererElementBoundings, 
+	// ex -> rendererElementBoundings = mainWrapper.value.getBoundingClientRect() // <- won't work
+	// because our object rendererElementBoundings is a reactive() thing (and need to stay a reactive() thing)
 
 	rendererElementBoundings.width = new String(mainWrapper.value.getBoundingClientRect().width)
 	rendererElementBoundings.height = new String(mainWrapper.value.getBoundingClientRect().height)
+	// we use 'new String()' because the renderer canvas element (under the hood) 
+	// expects some Strings (getBoundingClientRect() provides Numbers) in attributes width and height
 	
 }
 
