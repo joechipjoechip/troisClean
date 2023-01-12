@@ -142,10 +142,8 @@ function handleResize(){
 	
 }
 
-watch(rendererElementBoundings, ( newVal ) => {
-
+watch(() => rendererElementBoundings, ( newVal ) => {
 	rendererElement.value?.three.setSize(newVal.width, newVal.height)
-
 })
 
 function updateMesh(){
@@ -159,7 +157,7 @@ function updateMesh(){
 
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 
 .wrapper {
   position: relative;
