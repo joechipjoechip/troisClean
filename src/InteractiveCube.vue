@@ -171,11 +171,9 @@ if( props.scrollSensitive ){
 
 				onUpdate: () => {
 					cameraDeltaY.value = animatedObject.dynamicCameraY
-					lastCameraY = cameraDeltaY.value
 				},
 				
 				onComplete: () => {
-					lastCameraY = cameraDeltaY.value
 					tl = null
 				}
 			}
