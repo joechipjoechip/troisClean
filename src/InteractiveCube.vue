@@ -136,6 +136,8 @@ function handleResize(){
 	// we can't destructure or directly assign getBoundingClientRect() returned value to rendererElementBoundings, 
 	// ex -> rendererElementBoundings = mainWrapper.value.getBoundingClientRect() // <- won't work
 	// because our object rendererElementBoundings is a reactive() thing (and need to stay a reactive() thing)
+	// then : no direct assignation, instead, use .keys and put some values into
+	// like this :
 
 	rendererElementBoundings.width = new String(mainWrapper.value.getBoundingClientRect().width)
 	rendererElementBoundings.height = new String(mainWrapper.value.getBoundingClientRect().height)
