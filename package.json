@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@vueuse/core": "^9.10.0",
+    "gsap": "^3.11.4",
     "sass": "^1.57.1",
     "three": "^0.134.0",
     "troisjs": "^0.3.3",
