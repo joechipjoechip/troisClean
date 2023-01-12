@@ -12,8 +12,8 @@
 			class="renderer"
 			antialias
 			:alpha="true"
-			:width="new String(rendererElementBoundings.width)"
-			:height="new String(rendererElementBoundings.height)"
+			:width="rendererElementBoundings.width"
+			:height="rendererElementBoundings.height"
 		>
 		<!-- :orbit-ctrl="{ enableDamping: true }"  -->
 
@@ -91,7 +91,7 @@ const boxOneElement = ref(null)
 
 const renderEnabled = ref(false)
 
-let rendererElementBoundings
+const rendererElementBoundings = reactive({})
 
 const { x: mouseX, y: mouseY } = useMouseNormalised()
 
@@ -106,14 +106,6 @@ onMounted(() => {
 
 	launchRendering()
 
-})
-
-function handleResize(){
-	rendererElementBoundings = reactive(mainWrapper.value.getBoundingClientRect())
-}
-
-watch(() => rendererElementBoundings, ( newVal ) => {
-	rendererElement.value?.three.setSize(newVal.width, newVal.height)
 })
 
 function launchRendering(){
@@ -136,6 +128,29 @@ function launchRendering(){
 	}
 
 }
+
+
+function handleResize(){
+	// console.log("handleResize")
+	
+	// we can't destructure or directly assign getBoundingClientRect() returned value to rendererElementBoundings, 
+	// ex -> rendererElementBoundings = mainWrapper.value.getBoundingClientRect() // <- won't work
+	// because our object rendererElementBoundings is a reactive() thing (and need to stay a reactive() thing)
+
+	rendererElementBoundings.width = new String(mainWrapper.value.getBoundingClientRect().width)
+	rendererElementBoundings.height = new String(mainWrapper.value.getBoundingClientRect().height)
+
+	// we use 'new String()' because the renderer canvas element (under the hood) 
+	// expects some Strings (getBoundingClientRect() provides Numbers) in attributes width and height
+}
+
+watch(rendererElementBoundings, ( newVal ) => {
+	rendererElement.value?.three.setSize(newVal.width, newVal.height)
+})
+
+
+
+
 
 function updateMesh(){
 
