@@ -149,10 +149,6 @@ watch(rendererElementBoundings, ( newVal ) => {
 	rendererElement.value?.three.setSize(newVal.width, newVal.height)
 })
 
-
-
-
-
 function updateMesh(){
 
 	boxOneElement.value.mesh.rotation.y += 0.0008
