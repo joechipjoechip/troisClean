@@ -34,8 +34,10 @@ const rendererElementBoundings = reactive({})
 const enlargeMainWrapper = ref(false)
 
 const cameraDeltaY = ref(0)
+const { directions } = props.scrollSensitive ? useScroll(window) : { directions: {} }
 
 let mouseX, mouseY
+
 
 
 defineExpose({ 
@@ -108,53 +110,77 @@ watch(rendererElementBoundings, ( newVal ) => {
 
 // * * * * * Scroll Logic :
 if( props.scrollSensitive ){
+	
+	const deltaYforScroll = 8
+	const deltaYforScrollDuration = 0.35
 
-	const { directions } = useScroll(window)
-	const lastY = 0
-
-	console.log('directions init : ', directions)
+	let tl = null
 
 	watch(
 		[() => directions.top, () => directions.bottom], 
-		( [newTop, newBottom], [oldTop, oldBottom] ) => {
-	
-			console.log("watcher directions : ", newTop, newBottom)
+		( [top, bottom]) => {
 
-			const infos = {
-				up: newTop,
-				down: newBottom
-			}
+			const infos = { top, bottom }
 
 			const goodDirection = Object.keys(infos).find(key => infos[key]) || "stop"
 
-			updateCamera(goodDirection)
+			dispatchDirection(goodDirection)
 	
 		}
 	)
-	
-	function updateCamera( direction ){
-	
-		console.log("update camera : ", direction)
-	
+
+	function dispatchDirection( direction ){
+		console.log("dispatch triggered : direction : ", direction)
+
 		if( direction === "stop" ){
-			// stop
-			lastY = window.scrollY
+
+			buildTween(0)
+
 		} else {
-	
-			cameraDeltaY.value += 1
-	
-			tweenThat()
-	
+
+			buildTween(
+				(direction === "top" ? deltaYforScroll : -deltaYforScroll)
+			)
+			
 		}
-	
+
 	}
-	
-	function tweenThat(){
-	
-		const tl = new TimelineMax()
-	
-		console.log("tl : ", tl)
-	
+
+	function buildTween(destinationY){
+
+		const isStop = destinationY === 0
+		let tweenDuration = isStop ? deltaYforScrollDuration * 6 : deltaYforScrollDuration
+
+		if( tl ){
+			tl.kill()
+			tl = null
+		}
+
+		tl = new TimelineMax()
+
+		console.log("buildTween triggered : destinaltionY : ", destinationY)
+
+		const animatedObject = { dynamicCameraY: cameraDeltaY.value }
+
+		tl.to(
+			animatedObject, 
+			{
+				duration: tweenDuration, 
+				dynamicCameraY : destinationY,
+				ease: isStop ? "elastic" : "easeInOut",
+
+				onUpdate: () => {
+					cameraDeltaY.value = animatedObject.dynamicCameraY
+					lastCameraY = cameraDeltaY.value
+				},
+				
+				onComplete: () => {
+					lastCameraY = cameraDeltaY.value
+					tl = null
+				}
+			}
+		);
+
 	}
 
 }
@@ -166,7 +192,7 @@ if( props.scrollSensitive ){
 function updateMesh(){
 
 	Object.keys(props.permanentRotationIncrement).forEach(key => {
-		return
+		return // disable when scroll logic is ok
 		if( !["x", "y", "z"].includes(key) ){
 			return
 		}
@@ -220,7 +246,8 @@ function updateMesh(){
 						z: 10,
 						y: cameraDeltaY
 					}" 
-					:far="5000" 
+					:far="5000"
+					:lookAt="{ x: 0, y: 0, z: 0 }"
 				/>
 	
 				<Scene>
@@ -249,7 +276,7 @@ function updateMesh(){
 						:size="3" 
 						ref="boxOneElement" 
 						:rotation="{ 
-							x: Math.PI / 4 + mouseX,
+							x: Math.PI / 2 + mouseX,
 							y: Math.PI / 4 + mouseY 
 						}"
 						:position="{ 
