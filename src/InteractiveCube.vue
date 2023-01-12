@@ -26,7 +26,7 @@
 				<PointLight 
 					:position="{ 
 						x: -50 * mouseX,
-						z: -1
+						z: -10 * mouseY
 					}" 
 					:intensity="2" 
 					color="#FF0000"
