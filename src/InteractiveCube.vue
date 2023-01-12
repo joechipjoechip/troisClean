@@ -9,7 +9,6 @@
 		<Renderer  
 			v-if="renderEnabled"
 			ref="rendererElement"
-			class="renderer"
 			antialias
 			:alpha="true"
 			:width="new String(rendererElementBoundings.width)"
@@ -112,23 +111,24 @@ onMounted(() => {
 function launchRendering(){
 
 	if( !renderEnabled.value ){
-
 		renderEnabled.value = true
-
-		nextTick(() => {
-
-			// ! update rotation PERMANENTLY !
-			// onBeforeRender() is a specific event coming from TroisJS (not vue)
-			// https://troisjs.github.io/guide/core/renderer.html#events-api-v0-3
-			rendererElement.value.onBeforeRender(() => {
-				// "each three render frame : do this :"
-				updateMesh();
-			})
-
-		})
 	}
 
 }
+
+watch(renderEnabled, () => {
+	nextTick(() => {
+
+		// ! update rotation PERMANENTLY !
+		// onBeforeRender() is a specific event coming from TroisJS (not vue)
+		// https://troisjs.github.io/guide/core/renderer.html#events-api-v0-3
+		rendererElement.value.onBeforeRender(() => {
+			// "each three render frame : do this :"
+			updateMesh();
+		})
+
+	})
+})
 
 
 function handleResize(){
@@ -169,14 +169,12 @@ function updateMesh(){
   align-items: center;
   width: 70%;
   height: 100%;
-  border: solid 2px green;
+  border: solid 1px rgb(131, 131, 131);
+
+  color: currentColor;
 
   .debug {
     display: block;
-  }
-
-  .renderer {
-	border: solid 1px red;
   }
 }
 </style>

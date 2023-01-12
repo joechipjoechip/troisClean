@@ -23,11 +23,13 @@ function handleToggle(){
 	
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 
 body {
   padding: 0;
   margin: 0;
+
+  color: white;
 }
 
 .app {
@@ -38,7 +40,7 @@ body {
     align-items: center;
     width: 100%;
     height: 100vh;
-    background-color: orange;
+    background-color: #000;
 
   }
 }
