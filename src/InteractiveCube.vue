@@ -108,6 +108,23 @@ onMounted(() => {
 
 })
 
+function handleResize(){
+	
+	// we can't destructure or directly assign getBoundingClientRect() returned value to rendererElementBoundings, 
+	// ex -> rendererElementBoundings = mainWrapper.value.getBoundingClientRect() // <- won't work
+	// because our object rendererElementBoundings is a reactive() thing (and need to stay a reactive() thing)
+
+	rendererElementBoundings.width = new String(mainWrapper.value.getBoundingClientRect().width)
+	rendererElementBoundings.height = new String(mainWrapper.value.getBoundingClientRect().height)
+	// we use 'new String()' because the renderer canvas element (under the hood) 
+	// expects some Strings (getBoundingClientRect() provides Numbers) in attributes width and height
+	
+}
+
+watch(() => rendererElementBoundings, ( newVal ) => {
+	rendererElement.value?.three.setSize(newVal.width, newVal.height)
+})
+
 function launchRendering(){
 
 	if( !renderEnabled.value ){
@@ -128,23 +145,6 @@ function launchRendering(){
 	}
 
 }
-
-function handleResize(){
-	
-	// we can't destructure or directly assign getBoundingClientRect() returned value to rendererElementBoundings, 
-	// ex -> rendererElementBoundings = mainWrapper.value.getBoundingClientRect() // <- won't work
-	// because our object rendererElementBoundings is a reactive() thing (and need to stay a reactive() thing)
-
-	rendererElementBoundings.width = new String(mainWrapper.value.getBoundingClientRect().width)
-	rendererElementBoundings.height = new String(mainWrapper.value.getBoundingClientRect().height)
-	// we use 'new String()' because the renderer canvas element (under the hood) 
-	// expects some Strings (getBoundingClientRect() provides Numbers) in attributes width and height
-	
-}
-
-watch(() => rendererElementBoundings, ( newVal ) => {
-	rendererElement.value?.three.setSize(newVal.width, newVal.height)
-})
 
 function updateMesh(){
 
