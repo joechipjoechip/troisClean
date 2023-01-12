@@ -1,15 +1,19 @@
 <template>
 
 	<p class="debug">
-		x: {{ mouseX }}
+		x: {{ mouseX.toFixed(3) }}
 	</p>
 
 	<div ref="mainWrapper" class="wrapper">
 
 		<Renderer  
+			v-if="renderEnabled"
 			ref="rendererElement"
+			class="renderer"
 			antialias
 			:alpha="true"
+			:width="rendererElementBoundings.width"
+			:height="rendererElementBoundings.height"
 		>
 		<!-- :orbit-ctrl="{ enableDamping: true }"  -->
 
@@ -55,8 +59,7 @@
 				<EffectComposer>
 
 					<UnrealBloomPass 
-						:strength="2" 
-						:alpha="true"
+						:strength="2"
 					/> 
 
 
@@ -77,28 +80,78 @@
 
 <script setup>
 
-import { ref, onMounted, computed, reactive } from 'vue'
+import { ref, reactive, onMounted, watch, nextTick } from 'vue'
 
 import { useMouseNormalised } from "./composables/computePos"
+import { useHandleResize } from "./composables/handleResize"
 
-// const mainWrapper = ref(null)
+const mainWrapper = ref(null)
 const rendererElement = ref(null)
 const boxOneElement = ref(null)
 
+const renderEnabled = ref(false)
+
+const rendererElementBoundings = reactive({})
+
 const { x: mouseX, y: mouseY } = useMouseNormalised()
 
-onMounted(() => {
+defineExpose({ renderEnabled })
 
-	// update rotation PERMANENT
-	rendererElement.value.onBeforeRender(() => {
-		updateMesh();
-	})
+useHandleResize(handleResize, mainWrapper)
+
+
+onMounted(() => {
+	
+	handleResize()
+
+	launchRendering()
+
+})
+
+function launchRendering(){
+
+	if( !renderEnabled.value ){
+
+		renderEnabled.value = true
+
+		nextTick(() => {
+
+			// ! update rotation PERMANENTLY !
+			// onBeforeRender() is a specific event coming from TroisJS (not vue)
+			// https://troisjs.github.io/guide/core/renderer.html#events-api-v0-3
+			rendererElement.value.onBeforeRender(() => {
+				updateMesh();
+			})
+
+		})
+	}
+
+}
+
+function handleResize(){
+	
+	// we use new String() because the renderer canvas element (under the hood) 
+	// expects some Strings (getBoundingClientRect() provides Numbers) in attributes width and height
+
+	// + we can't destructure or directly assign getBoundingClientRect() returned value to rendererElementBoundings, 
+	// ex : rendererElementBoundings = mainWrapper.value.getBoundingClientRect() // <- won't work
+	//   because our object rendererElementBoundings is a reactive() thing (and need to stay a reactive() thing)
+
+	rendererElementBoundings.width = new String(mainWrapper.value.getBoundingClientRect().width)
+	rendererElementBoundings.height = new String(mainWrapper.value.getBoundingClientRect().height)
+	
+}
+
+watch(rendererElementBoundings, ( newVal ) => {
+
+	rendererElement.value?.three.setSize(newVal.width, newVal.height)
 
 })
 
 function updateMesh(){
 
 	boxOneElement.value.mesh.rotation.y += 0.0008
+
 	boxOneElement.value.mesh.rotation.x -= 0.0003
 
 }
@@ -110,13 +163,19 @@ function updateMesh(){
 
 .wrapper {
   position: relative;
-  display: block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 70%;
   height: 100%;
   border: solid 2px green;
 
   .debug {
     display: block;
+  }
+
+  .renderer {
+	border: solid 1px red;
   }
 }
 </style>

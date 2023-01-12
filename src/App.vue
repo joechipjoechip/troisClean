@@ -1,11 +1,25 @@
 <template>
 	<div class="app-wrapper">
-		<interactive-cube />
+
+		<button @click="handleToggle">toggle enable cube</button>
+		<interactive-cube ref="cube" />
+
 	</div>
 </template>
 
 <script setup>
 import InteractiveCube from "./InteractiveCube.vue"
+
+import { ref } from "vue"
+
+const cube = ref(null)
+
+
+function handleToggle(){
+
+	cube.value.renderEnabled = !cube.value.renderEnabled
+
+}
 	
 </script>
 
@@ -26,9 +40,6 @@ body {
     height: 100vh;
     background-color: orange;
 
-    p {
-      display: block;
-    }
   }
 }
 </style>

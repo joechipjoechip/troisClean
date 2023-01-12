@@ -5,14 +5,30 @@ export function useMouseNormalised( element ) {
   // - HTMLElement : specific element as reference for the compute
   // - empty : general window as reference for the compute
 
-  // The aim of this function is to provide mouse position with
-  // this format : [-1, 1] (from -1 to 1)
+  // The aim of this function is to provide mouse position
+  // with this format : [-1, 1] (from -1 to 1)
   // for both x and y
 
   const x = ref(0)
   const y = ref(0)
   const isWindow = !element
 
+
+  // EVENT MANAGER
+  if( isWindow ){
+
+    onMounted(() => window.addEventListener('mousemove', computePos))
+    onUnmounted(() => window.removeEventListener('mousemove', computePos))
+
+  } else {
+
+    onMounted(() => element.value.addEventListener('mousemove', computePos))
+    onUnmounted(() => element.value.removeEventListener('mousemove', computePos))
+    
+  }
+
+
+  // DO THE MAGIC
   function computePos( event ){
   
     if( event.touches?.[0] ){
@@ -50,22 +66,8 @@ export function useMouseNormalised( element ) {
         y.value = (((event.offsetY +  element.value.offsetHeight / 2) /  element.value.offsetHeight) - 1) * -2
 
       }
-      
   
     }
-  
-    
-  }
-
-  if( isWindow ){
-
-    onMounted(() => window.addEventListener('mousemove', computePos))
-    onUnmounted(() => window.removeEventListener('mousemove', computePos))
-
-  } else {
-
-    onMounted(() => element.value.addEventListener('mousemove', computePos))
-    onUnmounted(() => element.value.removeEventListener('mousemove', computePos))
     
   }
 
