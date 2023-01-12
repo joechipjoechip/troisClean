@@ -5,7 +5,17 @@
       <interactive-cube 
         ref="cube" 
         :mouse-sensitive="true"
-        :scroll-sensitive="true"
+        :scroll-sensitive="false"
+        :permanent-rotation-increment="{ 
+          x: 0.0003,
+          y: 0.0008
+        }"
+      />
+
+      <interactive-cube 
+        ref="cube" 
+        :mouse-sensitive="false"
+        :scroll-sensitive="false"
         :permanent-rotation-increment="{ 
           x: 0.0003,
           y: 0.0008
@@ -25,7 +35,7 @@
       <interactive-cube 
         ref="cube" 
         :mouse-sensitive="false"
-        :scroll-sensitive="true"
+        :scroll-sensitive="false"
         :permanent-rotation-increment="{ 
           x: 0.0003,
           y: 0.0008
@@ -35,7 +45,7 @@
       <interactive-cube 
         ref="cube" 
         :mouse-sensitive="false"
-        :scroll-sensitive="true"
+        :scroll-sensitive="false"
         :permanent-rotation-increment="{ 
           x: 0.0003,
           y: 0.0008
@@ -45,7 +55,7 @@
       <interactive-cube 
         ref="cube" 
         :mouse-sensitive="false"
-        :scroll-sensitive="true"
+        :scroll-sensitive="false"
         :permanent-rotation-increment="{ 
           x: 0.0003,
           y: 0.0008
@@ -55,17 +65,7 @@
       <interactive-cube 
         ref="cube" 
         :mouse-sensitive="false"
-        :scroll-sensitive="true"
-        :permanent-rotation-increment="{ 
-          x: 0.0003,
-          y: 0.0008
-        }"
-      />
-      
-      <interactive-cube 
-        ref="cube" 
-        :mouse-sensitive="false"
-        :scroll-sensitive="true"
+        :scroll-sensitive="false"
         :permanent-rotation-increment="{ 
           x: 0.0003,
           y: 0.0008
