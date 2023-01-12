@@ -84,8 +84,6 @@ if( props.mouseSensitive ){
 
 
 
-
-
 // * * * Resize Logic :
 const handleResizeThrolttled = useThrottleFn(handleResize, 150)
 
@@ -104,10 +102,6 @@ watch(rendererElementBoundings, ( newVal ) => {
 
 
 
-
-
-
-
 // * * * * * Scroll Logic :
 if( props.scrollSensitive ){
 	
@@ -120,9 +114,9 @@ if( props.scrollSensitive ){
 		[() => directions.top, () => directions.bottom], 
 		( [top, bottom]) => {
 
-			const infos = { top, bottom }
+			const freshDirections = { top, bottom }
 
-			const goodDirection = Object.keys(infos).find(key => infos[key]) || "stop"
+			const goodDirection = Object.keys(freshDirections).find(key => freshDirections[key]) || "stop"
 
 			dispatchDirection(goodDirection)
 	
