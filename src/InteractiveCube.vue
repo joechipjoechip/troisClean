@@ -38,6 +38,7 @@ const cameraDeltaY = ref(0)
 const { directions } = props.scrollSensitive ? useScroll(window) : { directions: {} }
 
 const axes = ["x", "y", "z"]
+const zeroPosition = reactive({ x: 0, y: 0, z: 0 })
 let mouseX, mouseY
 
 
@@ -240,7 +241,7 @@ function updateMesh(){
 						y: cameraDeltaY
 					}" 
 					:far="30"
-					:lookAt="{ x: 0, y: 0, z: 0 }"
+					:lookAt="new Object({ x: 0, y: 0, z: 0 })"
 				/>
 	
 				<Scene>
@@ -276,15 +277,7 @@ function updateMesh(){
 	
 						<!-- <SubSurfaceMaterial /> -->
 						<!-- <ToonMaterial /> -->
-						<SubSurfaceMaterial 
-							:uniform="{ 
-								thicknessColor: '#000000',
-								thicknessDistortion: 0.9,
-								thicknessAttenuation: 0.9,
-								transparent: true,
-								opacity: 0.1
-							}" 
-						/>
+						<SubSurfaceMaterial />
 	
 					</Box>
 	
