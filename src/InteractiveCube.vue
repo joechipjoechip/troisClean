@@ -38,7 +38,6 @@ const cameraDeltaY = ref(0)
 const { directions } = props.scrollSensitive ? useScroll(window) : { directions: {} }
 
 const axes = ["x", "y", "z"]
-const zeroPosition = reactive({ x: 0, y: 0, z: 0 })
 let mouseX, mouseY
 
 
@@ -272,6 +271,9 @@ function updateMesh(){
 							x: Math.PI / 2 + mouseX,
 							y: Math.PI / 4 + mouseY,
 							z: Math.PI / 8 + (cameraDeltaY / 100)
+						}"
+						:position="{
+							z: (cameraDeltaY / 100) + mouseX + mouseY
 						}"
 					>
 	
