@@ -7,8 +7,8 @@
         :mouse-sensitive="true"
         :scroll-sensitive="true"
         :permanent-rotation-increment="{ 
-          x: 0.0003,
-          y: 0.0008
+          x: 3,
+          y: 6
         }"
       />
 
@@ -17,28 +17,28 @@
         :mouse-sensitive="false"
         :scroll-sensitive="true"
         :permanent-rotation-increment="{ 
-          x: 0.0003,
-          y: 0.0008
+          x: 3,
+          y: 6
         }"
-      />
+        />
 
       <interactive-cube 
         ref="cube" 
         :mouse-sensitive="false"
         :scroll-sensitive="true"
         :permanent-rotation-increment="{ 
-          x: 0.0003,
-          y: 0.0008
+          x: 3,
+          y: 6
         }"
-      />
+        />
 
       <interactive-cube 
         ref="cube" 
         :mouse-sensitive="true"
         :scroll-sensitive="true"
-        :permanent-rotation-increment="{ 
-          x: 0.0003,
-          y: 0.0008
+          :permanent-rotation-increment="{ 
+          x: 3,
+          y: 6
         }"
       />
 
@@ -47,30 +47,30 @@
         :mouse-sensitive="false"
         :scroll-sensitive="true"
         :permanent-rotation-increment="{ 
-          x: 0.0003,
-          y: 0.0008
+          x: 3,
+          y: 6
         }"
-      />
-
-      <interactive-cube 
-        ref="cube" 
-        :mouse-sensitive="true"
-        :scroll-sensitive="true"
-        :permanent-rotation-increment="{ 
-          x: 0.0003,
-          y: 0.0008
-        }"
-      />
+        />
 
       <interactive-cube 
         ref="cube" 
         :mouse-sensitive="false"
         :scroll-sensitive="true"
         :permanent-rotation-increment="{ 
-          x: 0.0003,
-          y: 0.0008
+          x: 3,
+          y: 6
         }"
-      />
+        />
+
+      <interactive-cube 
+        ref="cube" 
+        :mouse-sensitive="false"
+        :scroll-sensitive="true"
+        :permanent-rotation-increment="{ 
+          x: 3,
+          y: 6
+        }"
+        />
 
 	</div>
 </template>

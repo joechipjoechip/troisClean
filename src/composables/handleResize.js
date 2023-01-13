@@ -3,7 +3,7 @@ import { onMounted, onUnmounted } from 'vue'
 export function useHandleResize( fn, element ) {
  
     if( element ){
-        console.log("resize event set -> via resizeObserver on ", element)
+        // console.log("resize event set -> via resizeObserver on ", element)
 
         const resizeObserver = new ResizeObserver(() => {
             // console.log("resizeObserver triggered")

@@ -2,7 +2,7 @@
 
 import { ref, reactive, onMounted, watch, nextTick } from 'vue'
 
-import { TimelineMax } from "gsap/all";
+import { TimelineLite, TimelineMax } from "gsap/all";
 import { useHandleResize } from "./composables/handleResize"
 import { useMouseNormalised } from "./composables/computePos"
 import { useScroll } from '@vueuse/core'
@@ -30,6 +30,9 @@ const boxOneElement = ref(null)
 const renderEnabled = ref(false)
 
 const rendererElementBoundings = reactive({})
+
+const permanentRotationMoving = reactive({})
+const permanentCycleDuration = 30
 
 const reduceItemSize = ref(false)
 
@@ -88,7 +91,7 @@ watch(rendererElementBoundings, ( newVal ) => {
 // * * * * * Scroll Logic :
 if( props.scrollSensitive ){
 	
-	const deltaYforScroll = 6
+	const deltaYforScroll = 5
 	const deltaYforScrollDuration = 0.4
 
 	let tl = null
@@ -126,7 +129,7 @@ if( props.scrollSensitive ){
 	function buildTween(destinationY){
 
 		const isStop = destinationY === 0
-		let tweenDuration = isStop ? deltaYforScrollDuration * 6 : deltaYforScrollDuration
+		let tweenDuration = isStop ? deltaYforScrollDuration * 4 : deltaYforScrollDuration
 
 		if( tl ){
 			tl.kill()
@@ -164,33 +167,47 @@ if( props.scrollSensitive ){
 
 
 // - - - - Permanent rotation logic
-watch(renderEnabled, () => {
+if( Object.keys(props.permanentRotationIncrement).length ) {
 
-	nextTick(() => {
+	dispatchRotations()
 
-		const permanentRotationKeys = Object.keys(props.permanentRotationIncrement)
+	function dispatchRotations(){
 
-		if( permanentRotationKeys.length ) {
+		Object.keys(props.permanentRotationIncrement).forEach(key => {
 
-			// ! update rotation PERMANENTLY !
-			// onBeforeRender() is a specific event coming from TroisJS (not vue)
-			// https://troisjs.github.io/guide/core/renderer.html#events-api-v0-3
-			rendererElement.value.onBeforeRender(() => {
-				// "each three render frame : do this :"
-				updateMesh();
-			})
+			buildTweenForPermanentRotation(key, 0, props.permanentRotationIncrement[key])
 
-		}
+		})
 
-	})
+	}
 
-})
+	function buildTweenForPermanentRotation(key, begin, end){
+		console.log("build tween launched")
 
-function updateMesh(){
+		let tl = new TimelineLite()
 
-	Object.keys(props.permanentRotationIncrement).forEach(key => {
-		boxOneElement.value.mesh.rotation[key] += props.permanentRotationIncrement[key]
-	})
+		const animatedObject = { rotationValue: begin }
+
+		tl.to(
+			animatedObject,
+			{
+				duration: permanentCycleDuration,
+				rotationValue: end,
+				ease: "easeInOut",
+
+				onUpdate: () => {
+					permanentRotationMoving[key] = animatedObject.rotationValue
+				},
+
+				onComplete: () => {
+					tl = null
+					buildTweenForPermanentRotation(key, end, begin)
+				}
+			}
+		)
+
+	}
+
 
 }
 
@@ -243,7 +260,7 @@ function updateMesh(){
 	
 				<Scene>
 	
-					<!-- <AmbientLight color="#00FF00" :intensity="1" /> -->
+					<AmbientLight color="#30f1ff" :intensity="0.3" />
 	
 					<PointLight 
 						:position="{ 
@@ -267,9 +284,9 @@ function updateMesh(){
 						:size="3" 
 						ref="boxOneElement" 
 						:rotation="{ 
-							x: Math.PI / 2 + mouseX,
-							y: Math.PI / 4 + mouseY,
-							z: Math.PI / 8 + (cameraDeltaY / 100)
+							x: Math.PI / 2 + mouseX + (permanentRotationMoving.x || 0),
+							y: Math.PI / 4 + mouseY + (permanentRotationMoving.y || 0),
+							z: Math.PI / 8 + (cameraDeltaY / 100) + (permanentRotationMoving.z || 0)
 						}"
 						:position="{
 							z: (cameraDeltaY / 100) + mouseX + mouseY
