@@ -26,6 +26,7 @@ const props = defineProps({
 const mainWrapper = ref(null)
 const rendererElement = ref(null)
 const boxOneElement = ref(null)
+const cameraElement = ref(null)
 
 const renderEnabled = ref(false)
 
@@ -36,6 +37,7 @@ const reduceItemSize = ref(false)
 const cameraDeltaY = ref(0)
 const { directions } = props.scrollSensitive ? useScroll(window) : { directions: {} }
 
+const axes = ["x", "y", "z"]
 let mouseX, mouseY
 
 
@@ -50,24 +52,6 @@ onMounted(() => {
 
 	handleResize()
 
-})
-
-watch(renderEnabled, () => {
-	nextTick(() => {
-
-		if( Object.keys(props.permanentRotationIncrement).length ) {
-
-			// ! update rotation PERMANENTLY !
-			// onBeforeRender() is a specific event coming from TroisJS (not vue)
-			// https://troisjs.github.io/guide/core/renderer.html#events-api-v0-3
-			rendererElement.value.onBeforeRender(() => {
-				// "each three render frame : do this :"
-				updateMesh();
-			})
-
-		}
-
-	})
 })
 
 
@@ -124,7 +108,7 @@ if( props.scrollSensitive ){
 	)
 
 	function dispatchDirection( direction ){
-		console.log("dispatch triggered : direction : ", direction)
+		// console.log("dispatch triggered : direction : ", direction)
 
 		if( direction === "stop" ){
 
@@ -152,7 +136,7 @@ if( props.scrollSensitive ){
 
 		tl = new TimelineMax()
 
-		console.log("buildTween triggered : destinaltionY : ", destinationY)
+		// console.log("buildTween triggered : destinaltionY : ", destinationY)
 
 		const animatedObject = { dynamicCameraY: cameraDeltaY.value }
 
@@ -181,16 +165,32 @@ if( props.scrollSensitive ){
 
 
 // - - - - Permanent rotation logic
+watch(renderEnabled, () => {
+
+	nextTick(() => {
+
+		const permanentRotationKeys = Object.keys(props.permanentRotationIncrement)
+
+		if( permanentRotationKeys.length ) {
+
+			// ! update rotation PERMANENTLY !
+			// onBeforeRender() is a specific event coming from TroisJS (not vue)
+			// https://troisjs.github.io/guide/core/renderer.html#events-api-v0-3
+			rendererElement.value.onBeforeRender(() => {
+				// "each three render frame : do this :"
+				updateMesh();
+			})
+
+		}
+
+	})
+
+})
+
 function updateMesh(){
 
 	Object.keys(props.permanentRotationIncrement).forEach(key => {
-		// return // disable when scroll logic is ok
-		if( !["x", "y", "z"].includes(key) ){
-			return
-		}
-
 		boxOneElement.value.mesh.rotation[key] += props.permanentRotationIncrement[key]
-
 	})
 
 }
@@ -234,11 +234,12 @@ function updateMesh(){
 			<!-- :orbit-ctrl="{ enableDamping: true }"  -->
 	
 				<Camera 
+					ref="cameraElement"
 					:position="{ 
 						z: 10,
 						y: cameraDeltaY
 					}" 
-					:far="50"
+					:far="30"
 					:lookAt="{ x: 0, y: 0, z: 0 }"
 				/>
 	

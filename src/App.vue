@@ -44,7 +44,7 @@
 
       <interactive-cube 
         ref="cube" 
-        :mouse-sensitive="false"
+        :mouse-sensitive="true"
         :scroll-sensitive="true"
         :permanent-rotation-increment="{ 
           x: 0.0003,
