@@ -1,4 +1,4 @@
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onBeforeUnmount } from 'vue'
 
 export function useHandleResize( fn, element ) {
  
@@ -11,13 +11,13 @@ export function useHandleResize( fn, element ) {
         });
         
         onMounted(() => resizeObserver.observe(element.value))
-        onUnmounted(() => resizeObserver.unobserve(element.value))
+        onBeforeUnmount(() => resizeObserver.unobserve(element.value))
 
     } else {
         // console.log("resize event set -> directly on window")
 
         onMounted(() => window.addEventListener('resize', fn))
-        onUnmounted(() => window.removeEventListener('resize', fn))
+        onBeforeUnmount(() => window.removeEventListener('resize', fn))
 
     }
 

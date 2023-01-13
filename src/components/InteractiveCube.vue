@@ -1,10 +1,10 @@
 <script setup>
 
-import { ref, reactive, onMounted, watch } from 'vue'
+import { inject, ref, reactive, onMounted, onBeforeUnmount, watch } from 'vue'
 
 import { TimelineLite, TimelineMax } from "gsap/all";
-import { useHandleResize } from "./composables/handleResize"
-import { useMouseNormalised } from "./composables/computePos"
+import { useHandleResize } from "../composables/handleResize"
+import { useMouseNormalised } from "../composables/computePos"
 import { useScroll } from '@vueuse/core'
 import { useThrottleFn } from '@vueuse/core'
 
@@ -22,6 +22,8 @@ const props = defineProps({
 		default: {}
 	}
 })
+
+const bus = inject("BUS")
 
 const mainWrapper = ref(null)
 const rendererElement = ref(null)
@@ -41,7 +43,6 @@ const axes = ["x", "y", "z"]
 let mouseX, mouseY
 
 
-
 defineExpose({ 
 	renderEnabled 
 })
@@ -53,7 +54,6 @@ onMounted(() => {
 	handleResize()
 
 })
-
 
 
 // * * * * Mouse Sensitive Logic :
@@ -86,13 +86,22 @@ watch(rendererElementBoundings, ( newVal ) => {
 
 
 
-// * * * * * Scroll Logic :
+// * * * * * Scroll Logic 
+
 if( props.scrollSensitive ){
 	
 	const deltaYforScroll = 5
 	const deltaYforScrollDuration = 0.4
 
 	let tl = null
+
+	onMounted(() => {
+		bus.on("main-touch-end", () => dispatchDirection("stop"))
+	})
+
+	onBeforeUnmount(() => {
+		bus.off("main-touch-end", () => dispatchDirection("stop"))
+	})
 
 	watch(
 		[() => directions.top, () => directions.bottom], 
@@ -160,6 +169,8 @@ if( props.scrollSensitive ){
 	}
 
 }
+
+
 
 // * * * * * * * * * * *
 
@@ -324,43 +335,37 @@ if( Object.keys(props.permanentRotationIncrement).length ) {
 <style lang="scss" scoped>
 
 .main {
+  &-cube-container {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
 
-	&-cube-container {
-		display: block;
-		position: relative;
-		width: 100%;
-		height: 100%;
+    .debug {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 50;
+      display: block;
+    }
+  }
 
-		.debug {
-			display: block;
-			position: absolute;
-			top: 10px;
-			left: 10px;
-			z-index: 50;
-		}
-	}
+  &-wrapper {
+    position: relative;
+    z-index: 40;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 450px;
+    color: currentColor;
+    border: solid 1px rgb(131, 131, 131);
+    transition: all 2s ease;
 
-	&-wrapper {
-		z-index: 40;
-		position: relative;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		width: 100%;
-		height: 450px;
-		border: solid 1px rgb(131, 131, 131);
-		
-		color: currentColor;
-
-		transition: all 2s ease;
-
-		&.reduced {
-			width: 40%;
-			height: 200px;
-		}
-	 
-	}
-	
+    &.reduced {
+      width: 40%;
+      height: 200px;
+    }
+  }
 }
-
 </style>

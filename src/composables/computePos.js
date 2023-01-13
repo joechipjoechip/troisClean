@@ -1,4 +1,4 @@
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 export function useMouseNormalised( element ) {
   // Can handle :
@@ -18,12 +18,12 @@ export function useMouseNormalised( element ) {
   if( isWindow ){
 
     onMounted(() => window.addEventListener('mousemove', computePos))
-    onUnmounted(() => window.removeEventListener('mousemove', computePos))
+    onBeforeUnmount(() => window.removeEventListener('mousemove', computePos))
 
   } else {
 
     onMounted(() => element.value.addEventListener('mousemove', computePos))
-    onUnmounted(() => element.value.removeEventListener('mousemove', computePos))
+    onBeforeUnmount(() => element.value.removeEventListener('mousemove', computePos))
     
   }
 
