@@ -7,8 +7,9 @@
         :mouse-sensitive="true"
         :scroll-sensitive="true"
         :permanent-rotation-increment="{ 
-          x: 3,
-          y: 6
+          x: { angle: 6, duration: 15 },
+          y: { angle: 2, duration: 2 },
+          z: { angle: 10, duration: 30 }
         }"
       />
 
@@ -17,8 +18,9 @@
         :mouse-sensitive="false"
         :scroll-sensitive="true"
         :permanent-rotation-increment="{ 
-          x: 3,
-          y: 6
+          x: { angle: 5, duration: 5 },
+          y: { angle: 25, duration: 10 },
+          z: { angle: 1, duration: 2 }
         }"
         />
 
@@ -26,50 +28,30 @@
         ref="cube" 
         :mouse-sensitive="false"
         :scroll-sensitive="true"
-        :permanent-rotation-increment="{ 
-          x: 3,
-          y: 6
-        }"
         />
 
       <interactive-cube 
         ref="cube" 
         :mouse-sensitive="true"
         :scroll-sensitive="true"
-          :permanent-rotation-increment="{ 
-          x: 3,
-          y: 6
-        }"
       />
 
       <interactive-cube 
         ref="cube" 
         :mouse-sensitive="false"
         :scroll-sensitive="true"
-        :permanent-rotation-increment="{ 
-          x: 3,
-          y: 6
-        }"
         />
 
       <interactive-cube 
         ref="cube" 
         :mouse-sensitive="false"
         :scroll-sensitive="true"
-        :permanent-rotation-increment="{ 
-          x: 3,
-          y: 6
-        }"
         />
 
       <interactive-cube 
         ref="cube" 
         :mouse-sensitive="false"
         :scroll-sensitive="true"
-        :permanent-rotation-increment="{ 
-          x: 3,
-          y: 6
-        }"
         />
 
 	</div>

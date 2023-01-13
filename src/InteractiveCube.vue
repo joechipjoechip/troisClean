@@ -175,24 +175,25 @@ if( Object.keys(props.permanentRotationIncrement).length ) {
 
 		Object.keys(props.permanentRotationIncrement).forEach(key => {
 
-			buildTweenForPermanentRotation(key, 0, props.permanentRotationIncrement[key])
+			if( !axes.includes(key) ){ return }
+
+			buildTweenForPermanentRotation(key, 0, props.permanentRotationIncrement[key].angle)
 
 		})
 
 	}
 
-	function buildTweenForPermanentRotation(key, begin, end){
-		console.log("build tween launched")
+	function buildTweenForPermanentRotation(key, beginAngle, endAngle){
 
 		let tl = new TimelineLite()
 
-		const animatedObject = { rotationValue: begin }
+		const animatedObject = { rotationValue: beginAngle }
 
 		tl.to(
 			animatedObject,
 			{
-				duration: permanentCycleDuration,
-				rotationValue: end,
+				duration: props.permanentRotationIncrement[key].duration,
+				rotationValue: endAngle,
 				ease: "easeInOut",
 
 				onUpdate: () => {
@@ -201,13 +202,12 @@ if( Object.keys(props.permanentRotationIncrement).length ) {
 
 				onComplete: () => {
 					tl = null
-					buildTweenForPermanentRotation(key, end, begin)
+					buildTweenForPermanentRotation(key, endAngle, beginAngle)
 				}
 			}
 		)
 
 	}
-
 
 }
 
