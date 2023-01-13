@@ -1,6 +1,6 @@
 <script setup>
 
-import { ref, reactive, onMounted, watch, nextTick } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 
 import { TimelineLite, TimelineMax } from "gsap/all";
 import { useHandleResize } from "./composables/handleResize"
@@ -25,14 +25,12 @@ const props = defineProps({
 
 const mainWrapper = ref(null)
 const rendererElement = ref(null)
-const boxOneElement = ref(null)
 
 const renderEnabled = ref(false)
 
 const rendererElementBoundings = reactive({})
 
 const permanentRotationMoving = reactive({})
-const permanentCycleDuration = 30
 
 const reduceItemSize = ref(false)
 
@@ -282,7 +280,6 @@ if( Object.keys(props.permanentRotationIncrement).length ) {
 	
 					<Box 
 						:size="3" 
-						ref="boxOneElement" 
 						:rotation="{ 
 							x: Math.PI / 2 + mouseX + (permanentRotationMoving.x || 0),
 							y: Math.PI / 4 + mouseY + (permanentRotationMoving.y || 0),
