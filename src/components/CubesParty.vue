@@ -9,7 +9,11 @@ import InteractiveCube from "./InteractiveCube.vue"
 		<interactive-cube 
 			ref="cube" 
 			:mouse-sensitive="true"
+
 			:scroll-sensitive="true"
+			:scroll-anim-duration="0.5"
+			:scroll-anim-delta="5"
+
 			:permanent-rotation-increment="{ 
 				x: { angle: 6, duration: 15 },
 				y: { angle: 2, duration: 2 },
@@ -20,19 +24,26 @@ import InteractiveCube from "./InteractiveCube.vue"
 		<interactive-cube 
 			ref="cube" 
 			:mouse-sensitive="false"
+
 			:scroll-sensitive="true"
+			:scroll-anim-duration="0.5"
+			:scroll-anim-delta="15"
 		/>
 
 		<interactive-cube 
 			ref="cube" 
 			:mouse-sensitive="false"
 			:scroll-sensitive="true"
+			:scroll-anim-duration="0.5"
 		/>
 
 		<interactive-cube 
 			ref="cube" 
 			:mouse-sensitive="false"
+			
 			:scroll-sensitive="true"
+			:scroll-anim-duration="0.5"
+
 			:permanent-rotation-increment="{ 
 				x: { angle: 5, duration: 5 },
 				y: { angle: 25, duration: 10 },

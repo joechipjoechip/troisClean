@@ -11,8 +11,7 @@ useUserInteractions()
 
 <template>
 	<div class="app-wrapper">
-
-    <button @click="handleCheckBus">bus check</button>
+    
     <cubes-party />
 
 	</div>

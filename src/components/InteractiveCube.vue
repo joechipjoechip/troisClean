@@ -2,7 +2,7 @@
 
 import { inject, ref, reactive, onMounted, onBeforeUnmount, watch } from 'vue'
 
-import { TimelineLite, TimelineMax } from "gsap/all";
+import { TimelineLite } from "gsap/all";
 import { useHandleResize } from "../composables/handleResize"
 import { useMouseNormalised } from "../composables/computePos"
 import { useScroll } from '@vueuse/core'
@@ -20,28 +20,21 @@ const props = defineProps({
 	permanentRotationIncrement: {
 		type: Object,
 		default: {}
+	},
+	scrollAnimDuration: {
+		type: Number,
+		default: 0.5
+	},
+	scrollAnimDelta: {
+		type: Number,
+		default: 5
 	}
 })
 
 const bus = inject("BUS")
 
-const mainWrapper = ref(null)
-const rendererElement = ref(null)
-
 const renderEnabled = ref(false)
-
-const rendererElementBoundings = reactive({})
-
-const permanentRotationMoving = reactive({})
-
 const reduceItemSize = ref(false)
-
-const cameraDeltaY = ref(0)
-const { directions } = props.scrollSensitive ? useScroll(window) : { directions: {} }
-
-const axes = ["x", "y", "z"]
-let mouseX, mouseY
-
 
 defineExpose({ 
 	renderEnabled 
@@ -56,7 +49,34 @@ onMounted(() => {
 })
 
 
+
+// * * * Resize Logic :
+const handleResizeThrolttled = useThrottleFn(handleResize, 150)
+const rendererElementBoundings = reactive({})
+
+const mainWrapper = ref(null)
+const rendererElement = ref(null)
+
+function handleResize(){
+	// console.log("handleResize")
+	rendererElementBoundings.width = mainWrapper.value.getBoundingClientRect().width
+	rendererElementBoundings.height = mainWrapper.value.getBoundingClientRect().height
+}
+
+useHandleResize(handleResizeThrolttled, mainWrapper)
+
+watch(rendererElementBoundings, 
+	( newVal ) => {
+		rendererElement.value?.three.setSize(newVal.width, newVal.height)
+	}
+)
+// * * * * * * * * * * *
+
+
+
 // * * * * Mouse Sensitive Logic :
+let mouseX, mouseY
+
 if( props.mouseSensitive ){
 	mouseX = useMouseNormalised().x
 	mouseY = useMouseNormalised().y
@@ -67,33 +87,12 @@ if( props.mouseSensitive ){
 // * * * * * * * * * * * * * * * * * * * 
 
 
-
-// * * * Resize Logic :
-const handleResizeThrolttled = useThrottleFn(handleResize, 150)
-
-function handleResize(){
-	// console.log("handleResize")
-	rendererElementBoundings.width = mainWrapper.value.getBoundingClientRect().width
-	rendererElementBoundings.height = mainWrapper.value.getBoundingClientRect().height
-}
-
-useHandleResize(handleResizeThrolttled, mainWrapper)
-
-watch(rendererElementBoundings, ( newVal ) => {
-	rendererElement.value?.three.setSize(newVal.width, newVal.height)
-})
-// * * * * * * * * * * *
-
-
-
 // * * * * * Scroll Logic 
 
-if( props.scrollSensitive ){
-	
-	const deltaYforScroll = 5
-	const deltaYforScrollDuration = 0.4
+const { directions } = useScroll(window, { behavior: "smooth" })
+const cameraDeltaY = ref(0)
 
-	let tl = null
+if( props.scrollSensitive ){
 
 	onMounted(() => {
 		bus.on("main-touch-end", () => dispatchDirection("stop"))
@@ -104,10 +103,8 @@ if( props.scrollSensitive ){
 	})
 
 	watch(
-		[() => directions.top, () => directions.bottom], 
-		( [top, bottom]) => {
-
-			const freshDirections = { top, bottom }
+		directions, 
+		freshDirections => {
 
 			const goodDirection = Object.keys(freshDirections).find(key => freshDirections[key]) || "stop"
 
@@ -115,6 +112,8 @@ if( props.scrollSensitive ){
 	
 		}
 	)
+
+
 
 	function dispatchDirection( direction ){
 		// console.log("dispatch triggered : direction : ", direction)
@@ -126,24 +125,27 @@ if( props.scrollSensitive ){
 		} else {
 
 			buildTween(
-				(direction === "top" ? deltaYforScroll : -deltaYforScroll)
+				(direction === "top" ? props.scrollAnimDelta : -props.scrollAnimDelta)
 			)
 			
 		}
 
 	}
 
+
+	let tl = null
+
 	function buildTween(destinationY){
 
 		const isStop = destinationY === 0
-		let tweenDuration = isStop ? deltaYforScrollDuration * 4 : deltaYforScrollDuration
+		let tweenDuration = isStop ? props.scrollAnimDuration * 6 : props.scrollAnimDuration
 
 		if( tl ){
 			tl.kill()
 			tl = null
 		}
 
-		tl = new TimelineMax()
+		tl = new TimelineLite()
 
 		// console.log("buildTween triggered : destinaltionY : ", destinationY)
 
@@ -170,12 +172,13 @@ if( props.scrollSensitive ){
 
 }
 
-
-
 // * * * * * * * * * * *
 
 
 // - - - - Permanent rotation logic
+const axes = ["x", "y", "z"]
+const permanentRotationMoving = reactive({})
+
 if( Object.keys(props.permanentRotationIncrement).length ) {
 
 	dispatchRotations()
