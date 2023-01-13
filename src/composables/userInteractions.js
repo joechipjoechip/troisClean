@@ -10,18 +10,24 @@ export function useUserInteractions() {
 		window.addEventListener("touchend", handleTouchEnd)
 		window.addEventListener("touchmove", handleTouchMove)
 
+		window.addEventListener("touchcancel", handleTouchEnd)
+		window.addEventListener("scrollend", handleTouchEnd)
+
 		window.addEventListener("mousedown", handleTouchStart)
 		window.addEventListener("mouseup", handleTouchEnd)
 		window.addEventListener("mousemove", handleTouchMove)
-
+		
 	})
-
+	
 	onBeforeUnmount(() => {
 
 		window.removeEventListener("touchstart", handleTouchStart)
 		window.removeEventListener("touchend", handleTouchEnd)
 		window.removeEventListener("touchmove", handleTouchMove)
-
+	
+		window.removeEventListener("touchcancel", handleTouchEnd)
+		window.removeEventListener("scrollend", handleTouchEnd)
+	
 		window.removeEventListener("mousedown", handleTouchStart)
 		window.removeEventListener("mouseup", handleTouchEnd)
 		window.removeEventListener("mousemove", handleTouchMove)
