@@ -26,7 +26,6 @@ const props = defineProps({
 const mainWrapper = ref(null)
 const rendererElement = ref(null)
 const boxOneElement = ref(null)
-const cameraElement = ref(null)
 
 const renderEnabled = ref(false)
 
@@ -234,7 +233,6 @@ function updateMesh(){
 			<!-- :orbit-ctrl="{ enableDamping: true }"  -->
 	
 				<Camera 
-					ref="cameraElement"
 					:position="{ 
 						z: 10,
 						y: cameraDeltaY
@@ -249,7 +247,7 @@ function updateMesh(){
 	
 					<PointLight 
 						:position="{ 
-							x: 5 * cameraDeltaY / 100
+							x: 5 * Math.abs(cameraDeltaY / 100)
 						}" 
 						:intensity="1.5" 
 						color="#3100bb"
@@ -259,9 +257,10 @@ function updateMesh(){
 						:position="{ 
 							x: 0.335,
 							y: 0.007,
+							z: (Math.abs(cameraDeltaY) / 10) * 1
 						}" 
-						:intensity="0.2"
-						color="#FFff00"
+						:intensity="0.15 * (Math.abs(cameraDeltaY) / 10)"
+						color="#00FF00"
 					/>
 	
 					<Box 
