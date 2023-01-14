@@ -92,6 +92,8 @@ const cameraDeltaY = ref(0)
 
 if( props.scrollSensitive ){
 
+	let tl = null
+
 	watch(
 		store.userInteractions.scroll, 
 		newObjScroll => {
@@ -129,9 +131,6 @@ if( props.scrollSensitive ){
 		}
 
 	}
-
-
-	let tl = null
 
 	function buildTween(destinationY){
 
@@ -195,7 +194,7 @@ if( Object.keys(props.permanentRotationIncrement).length ) {
 
 	function buildTweenForPermanentRotation(key, beginAngle, endAngle){
 
-		let tl = new TimelineLite()
+		const tl = new TimelineLite()
 
 		const animatedObject = { rotationValue: beginAngle }
 
@@ -211,7 +210,6 @@ if( Object.keys(props.permanentRotationIncrement).length ) {
 				},
 
 				onComplete: () => {
-					tl = null
 					buildTweenForPermanentRotation(key, endAngle, beginAngle)
 				}
 			}
