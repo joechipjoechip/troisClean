@@ -105,19 +105,14 @@ if( props.scrollSensitive ){
 		store.userInteractions.scroll, 
 		newObjScroll => {
 
-			const { isScrolling, directions } = newObjScroll
+			const { directions } = newObjScroll
 
-			if( !isScrolling ){
-				dispatchDirection("stop")
-			} else {
-				const goodDirection = Object.keys(directions).find(key => directions[key]) || "stop"
-				dispatchDirection(goodDirection)
-			}
+			const goodDirection = Object.keys(directions).find(key => directions[key]) || "stop"
+
+			dispatchDirection(goodDirection)
 	
 		}
 	)
-
-
 
 	function dispatchDirection( direction ){
 		// console.log("dispatch triggered : direction : ", direction)
@@ -136,7 +131,7 @@ if( props.scrollSensitive ){
 
 	}
 
-
+	
 	let tl = null
 
 	function buildTween(destinationY){
