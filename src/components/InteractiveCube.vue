@@ -5,7 +5,6 @@ import { inject, ref, reactive, onMounted, onBeforeUnmount, watch } from 'vue'
 import { TimelineLite } from "gsap/all";
 import { useHandleResize } from "../composables/handleResize"
 import { useMouseNormalised } from "../composables/computePos"
-import { useScroll } from '@vueuse/core'
 import { useThrottleFn } from '@vueuse/core'
 
 const props = defineProps({
@@ -32,6 +31,7 @@ const props = defineProps({
 })
 
 const bus = inject("BUS")
+const store = inject("STORE")
 
 const renderEnabled = ref(false)
 const reduceItemSize = ref(false)
@@ -89,7 +89,6 @@ if( props.mouseSensitive ){
 
 // * * * * * Scroll Logic 
 
-const { directions } = useScroll(window, { behavior: "smooth" })
 const cameraDeltaY = ref(0)
 
 if( props.scrollSensitive ){
@@ -103,12 +102,17 @@ if( props.scrollSensitive ){
 	})
 
 	watch(
-		directions, 
-		freshDirections => {
+		store.userInteractions.scroll, 
+		newObjScroll => {
 
-			const goodDirection = Object.keys(freshDirections).find(key => freshDirections[key]) || "stop"
+			const { isScrolling, directions } = newObjScroll
 
-			dispatchDirection(goodDirection)
+			if( !isScrolling ){
+				dispatchDirection("stop")
+			} else {
+				const goodDirection = Object.keys(directions).find(key => directions[key]) || "stop"
+				dispatchDirection(goodDirection)
+			}
 	
 		}
 	)
@@ -236,10 +240,6 @@ if( Object.keys(props.permanentRotationIncrement).length ) {
 				x: {{ mouseX.toFixed(3) }}
 				<br>
 				y: {{ mouseY.toFixed(3) }}
-			</div>
-
-			<div v-if="props.scrollSensitive">
-				scroll : {{ directions }}
 			</div>
 
 			<button @click="reduceItemSize = !reduceItemSize">toggle main-cube-container width</button>
