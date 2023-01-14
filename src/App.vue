@@ -28,6 +28,7 @@ body {
 .app {
   &-wrapper {
     background: url(./assets/images/wallpaper.jpg);
+    background-size: cover;
   }
 }
 </style>
