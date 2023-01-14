@@ -96,7 +96,7 @@ if( props.scrollSensitive ){
 	onMounted(() => {
 		bus.on("main-touch-end", () => dispatchDirection("stop"))
 	})
-
+	
 	onBeforeUnmount(() => {
 		bus.off("main-touch-end", () => dispatchDirection("stop"))
 	})
@@ -131,7 +131,7 @@ if( props.scrollSensitive ){
 
 	}
 
-	
+
 	let tl = null
 
 	function buildTween(destinationY){

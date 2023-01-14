@@ -1,8 +1,9 @@
-import { inject, onMounted, onBeforeUnmount } from 'vue'
+import { inject, watch, onMounted, onBeforeUnmount } from 'vue'
 
 
 export function useUserInteractions() {
 	const bus = inject("BUS")
+	const store = inject("STORE")
 
 	onMounted(() => {
 
