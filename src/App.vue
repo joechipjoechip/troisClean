@@ -4,12 +4,10 @@ import CubesParty from "./components/CubesParty.vue"
 
 import { watch, inject } from "vue"
 
-import { useUserInteractions } from "./composables/userInteractions"
 import { useScroll } from "@vueuse/core"
 
 const store = inject("STORE")
 
-useUserInteractions()
 
 // * * * * Scroll logic * * * * *
 const { directions, isScrolling } = useScroll(window, { behavior: "smooth" })

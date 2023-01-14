@@ -2,7 +2,7 @@
 
 import { inject, ref, reactive, onMounted, onBeforeUnmount, watch } from 'vue'
 
-import { TimelineLite } from "gsap/all";
+import { TimelineLite } from "gsap";
 import { useHandleResize } from "../composables/handleResize"
 import { useMouseNormalised } from "../composables/computePos"
 import { useThrottleFn } from '@vueuse/core'
@@ -93,23 +93,23 @@ const cameraDeltaY = ref(0)
 
 if( props.scrollSensitive ){
 
-	onMounted(() => {
-		bus.on("main-touch-end", () => dispatchDirection("stop"))
-	})
-	
-	onBeforeUnmount(() => {
-		bus.off("main-touch-end", () => dispatchDirection("stop"))
-	})
-
 	watch(
 		store.userInteractions.scroll, 
 		newObjScroll => {
 
-			const { directions } = newObjScroll
+			const { directions, isScrolling } = newObjScroll
 
-			const goodDirection = Object.keys(directions).find(key => directions[key]) || "stop"
+			if( !isScrolling ){
 
-			dispatchDirection(goodDirection)
+				dispatchDirection("stop")
+				
+			} else {
+				
+				const goodDirection = Object.keys(directions).find(key => directions[key]) || "stop"
+	
+				dispatchDirection(goodDirection)
+
+			}
 	
 		}
 	)
