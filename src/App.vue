@@ -27,7 +27,7 @@ body {
 
 .app {
   &-wrapper {
-    background-color: rgb(33, 33, 33);
+    background: url(./assets/images/wallpaper.jpg);
   }
 }
 </style>
