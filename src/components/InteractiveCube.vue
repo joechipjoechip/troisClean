@@ -1,6 +1,6 @@
 <script setup>
 
-import { inject, ref, reactive, onMounted, onBeforeUnmount, watch } from 'vue'
+import { inject, ref, reactive, watch, onMounted } from 'vue'
 
 import { TimelineLite } from "gsap";
 import { useHandleResize } from "../composables/handleResize"
@@ -30,7 +30,6 @@ const props = defineProps({
 	}
 })
 
-const bus = inject("BUS")
 const store = inject("STORE")
 
 const renderEnabled = ref(false)

@@ -41,8 +41,6 @@ export function useMouseNormalised( element ) {
           )
         )
       
-  
-  
     } else {
 
       if( isWindow ){
@@ -63,7 +61,6 @@ export function useMouseNormalised( element ) {
     
   }
 
-  // expose managed state as return value
   return { x, y }
 
 }
