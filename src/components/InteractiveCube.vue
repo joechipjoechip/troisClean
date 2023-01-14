@@ -4,7 +4,7 @@ import { inject, ref, reactive, onMounted, onBeforeUnmount, watch } from 'vue'
 
 import { TimelineLite } from "gsap";
 import { useHandleResize } from "../composables/handleResize"
-import { useMouseNormalised } from "../composables/computePos"
+import { useMouseNormalised } from "../composables/mouseNormalized"
 import { useThrottleFn } from '@vueuse/core'
 
 const props = defineProps({
@@ -102,7 +102,7 @@ if( props.scrollSensitive ){
 			if( !isScrolling ){
 
 				dispatchDirection("stop")
-				
+
 			} else {
 				
 				const goodDirection = Object.keys(directions).find(key => directions[key]) || "stop"

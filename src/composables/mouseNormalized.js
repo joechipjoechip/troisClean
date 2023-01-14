@@ -1,4 +1,6 @@
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref } from 'vue'
+
+import { useEventListener } from "@vueuse/core"
 
 export function useMouseNormalised( element ) {
   // Can handle :
@@ -15,21 +17,11 @@ export function useMouseNormalised( element ) {
 
 
   // EVENT MANAGER
-  if( isWindow ){
-
-    onMounted(() => window.addEventListener('mousemove', computePos))
-    onBeforeUnmount(() => window.removeEventListener('mousemove', computePos))
-
-  } else {
-
-    onMounted(() => element.value.addEventListener('mousemove', computePos))
-    onBeforeUnmount(() => element.value.removeEventListener('mousemove', computePos))
-    
-  }
+  useEventListener( (isWindow ? window : element.value), "mousemove", computePosition)
 
 
   // DO THE MAGIC
-  function computePos( event ){
+  function computePosition( event ){
   
     if( event.touches?.[0] ){
   

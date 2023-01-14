@@ -1,5 +1,7 @@
 import { onMounted, onBeforeUnmount } from 'vue'
 
+import { useEventListener } from "@vueuse/core"
+
 export function useHandleResize( fn, element ) {
  
     if( element ){
@@ -16,8 +18,7 @@ export function useHandleResize( fn, element ) {
     } else {
         // console.log("resize event set -> directly on window")
 
-        onMounted(() => window.addEventListener('resize', fn))
-        onBeforeUnmount(() => window.removeEventListener('resize', fn))
+        useEventListener(window, "resize", fn)
 
     }
 
