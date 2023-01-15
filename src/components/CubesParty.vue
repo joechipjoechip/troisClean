@@ -1,4 +1,5 @@
 <script setup>
+
 import InteractiveCube from "./InteractiveCube.vue"
 
 </script>

@@ -3,6 +3,9 @@ import { inject, onMounted, onBeforeUnmount } from 'vue'
 // very useless file for the moment
 // just keeping it because maybe at a time it will be usefull
 
+// si un jour j'en ai besoin : ne pas oublié de l'updater complètement avec :
+// useEventListener, useMousePressed
+
 
 export function useUserInteractions() {
 	const bus = inject("BUS")

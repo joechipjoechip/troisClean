@@ -35,10 +35,6 @@ const store = inject("STORE")
 const renderEnabled = ref(false)
 const reduceItemSize = ref(false)
 
-defineExpose({ 
-	renderEnabled 
-})
-
 onMounted(() => {
 	
 	renderEnabled.value = true
@@ -46,6 +42,15 @@ onMounted(() => {
 	handleResize()
 
 })
+
+defineExpose({ 
+	renderEnabled 
+})
+
+// * * * * * * * * * * * * * * * * * * * * * * end of main stuffs * - * - *
+
+
+
 
 
 
