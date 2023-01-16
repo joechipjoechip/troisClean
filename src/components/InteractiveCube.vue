@@ -8,6 +8,8 @@ import { useMouseNormalised } from "../composables/mouseNormalized"
 import { useThrottleFn } from '@vueuse/core'
 import { useElementVisibility } from '@vueuse/core'
 
+import * as THREE from "three"
+
 const props = defineProps({
 	contentType: {
 		type: String,
@@ -46,6 +48,8 @@ const mainWrapper = ref(null)
 const renderEnabled = ref(false)
 const reduceItemSize = ref(false)
 
+const isPlane = props.contentType === 'none';
+
 const mouseX = ref(props.mouseSensitive ? useMouseNormalised().x : 0)
 const mouseY = ref(props.mouseSensitive ? useMouseNormalised().y : 0)
 
@@ -61,9 +65,9 @@ const animations = computed( () => {
 	return {
 		object3d: {
 			rotation: {
-				x: Math.PI / 2 + mouseX.value + permanentRotationMoving.x,
-				y: Math.PI / 4 + mouseY.value + permanentRotationMoving.y,
-				z: Math.PI / 8 + (cameraDeltaY.value/ 100) + permanentRotationMoving.z
+				x: mouseX.value + permanentRotationMoving.x,
+				y: mouseY.value + permanentRotationMoving.y,
+				z: (cameraDeltaY.value / 100) + permanentRotationMoving.z
 			},
 			position: {
 				x: 0,
@@ -341,8 +345,8 @@ if( Object.keys(props.permanentRotationIncrement).length ) {
 					<Group v-if="isVisible">
 
 						<Box 
-							v-if="props.contentType === 'none'"
-							:size="3" 
+							v-if="isPlane"
+							:size="2.5" 
 							:rotation="animations.object3d.rotation"
 							:position="animations.object3d.position"
 						>
@@ -355,11 +359,14 @@ if( Object.keys(props.permanentRotationIncrement).length ) {
 
 						<Plane 
 							v-else
-							:size="6" 
+							:size="12"
+							:scale="new Object({ x: 6, y: 6, z: 6 })"
 							:rotation="animations.object3d.rotation"
 							:position="animations.object3d.position"
 						>
-							<PhongMaterial>
+							<PhongMaterial :props="{
+								side: THREE.DoubleSide
+							}">
 								<Texture :src="props.contentSource" />
 							</PhongMaterial>
 		

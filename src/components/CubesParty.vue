@@ -7,16 +7,18 @@ import InteractiveCube from "./InteractiveCube.vue"
 <template>
 	<div>
 
-		<!-- <interactive-cube 
+		<interactive-cube 
 
 			content-type="image"
 			content-source="https://media.istockphoto.com/id/1191719793/photo/3d-abstract-background-with-ultraviolet-neon-lights-empty-frame-cosmic-landscape-glowing.jpg?b=1&s=612x612&w=0&k=20&c=xV2aK40vtrlr_Bx8Rl9SDnWRDG3AUgRcYGKTeSTWP6k="
 		
-			:mouse-sensitive="true"
+			:mouse-sensitive="false"
 			:scroll-sensitive="true"
-			:scroll-anim-duration="0.5"
-			:scroll-anim-delta="17"
-		/> -->
+			:scroll-anim-duration="0.8"
+			:scroll-anim-delta="5"
+
+			
+		/>
 
 		<interactive-cube  
 			:mouse-sensitive="true"
