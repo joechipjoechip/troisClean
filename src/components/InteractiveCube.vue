@@ -49,15 +49,15 @@ const store = inject("STORE")
 
 const mainWrapper = ref(null)
 
+const isContent = props.contentType === 'none';
 const renderEnabled = ref(false)
 const reduceItemSize = ref(false)
 
-const isContent = props.contentType === 'none';
 
 const mouseX = ref(props.mouseSensitive ? useMouseNormalised().x : 0)
 const mouseY = ref(props.mouseSensitive ? useMouseNormalised().y : 0)
 
-const cameraDeltaY = ref(0)
+const scrollInfluenceCameraY = ref(0)
 
 const permanentRotationMoving = reactive({
 	x: 0,
@@ -71,18 +71,18 @@ const animations = computed( () => {
 			rotation: {
 				x: (-mouseY.value * props.mouseInfluence.y) + permanentRotationMoving.x,
 				y: (mouseX.value * props.mouseInfluence.x) + permanentRotationMoving.y,
-				z: (cameraDeltaY.value / 100) + permanentRotationMoving.z
+				z: (scrollInfluenceCameraY.value / 100) + permanentRotationMoving.z
 			},
 			position: {
 				x: 0,
 				y: 0,
-				z: cameraDeltaY.value / 100
+				z: scrollInfluenceCameraY.value / 100
 			}
 		},
 		light: {
 			first: {
 				position: {
-					x: 5 * Math.abs(cameraDeltaY.value / 100)
+					x: 5 * Math.abs(scrollInfluenceCameraY.value / 100)
 				},
 				intensity: 1.5
 			},
@@ -90,9 +90,9 @@ const animations = computed( () => {
 				position: {
 					x: 0.335,
 					y: 0.007,
-					z: (Math.abs(cameraDeltaY.value) / 10) * 1
+					z: (Math.abs(scrollInfluenceCameraY.value) / 10) * 1
 				},
-				intensity: 0.15 * (Math.abs(cameraDeltaY.value) / 10)
+				intensity: 0.15 * (Math.abs(scrollInfluenceCameraY.value) / 10)
 			}
 		}
 	}
@@ -197,7 +197,7 @@ if( props.scrollSensitive ){
 
 		// console.log("buildTween triggered : destinaltionY : ", destinationY)
 
-		const animatedObject = { dynamicCameraY: cameraDeltaY.value }
+		const animatedObject = { dynamicCameraY: scrollInfluenceCameraY.value }
 
 		tl.to(
 			animatedObject, 
@@ -207,7 +207,7 @@ if( props.scrollSensitive ){
 				ease: isStop ? "elastic" : "easeIn",
 
 				onUpdate: () => {
-					cameraDeltaY.value = animatedObject.dynamicCameraY
+					scrollInfluenceCameraY.value = animatedObject.dynamicCameraY
 				},
 				
 				onComplete: () => {
@@ -328,7 +328,7 @@ if( Object.keys(props.permanentRotationIncrement).length ) {
 				<Camera 
 					:position="{ 
 						z: 10,
-						y: cameraDeltaY
+						y: scrollInfluenceCameraY
 					}" 
 					:far="30"
 					:lookAt="new Object({ x: 0, y: 0, z: 0 })"
