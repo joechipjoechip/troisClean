@@ -23,6 +23,10 @@ const props = defineProps({
 		type: Boolean,
 		default: false
 	},
+	mouseInfluence: {
+		type: Object,
+		default: { x: 1, y: 1 }
+	},
 	scrollSensitive: {
 		type: Boolean,
 		default: false
@@ -48,7 +52,7 @@ const mainWrapper = ref(null)
 const renderEnabled = ref(false)
 const reduceItemSize = ref(false)
 
-const isPlane = props.contentType === 'none';
+const isContent = props.contentType === 'none';
 
 const mouseX = ref(props.mouseSensitive ? useMouseNormalised().x : 0)
 const mouseY = ref(props.mouseSensitive ? useMouseNormalised().y : 0)
@@ -65,14 +69,14 @@ const animations = computed( () => {
 	return {
 		object3d: {
 			rotation: {
-				x: mouseX.value + permanentRotationMoving.x,
-				y: mouseY.value + permanentRotationMoving.y,
+				x: (-mouseY.value * props.mouseInfluence.y) + permanentRotationMoving.x,
+				y: (mouseX.value * props.mouseInfluence.x) + permanentRotationMoving.y,
 				z: (cameraDeltaY.value / 100) + permanentRotationMoving.z
 			},
 			position: {
 				x: 0,
 				y: 0,
-				z: (cameraDeltaY.value / 100) + mouseX.value + mouseY.value
+				z: cameraDeltaY.value / 100
 			}
 		},
 		light: {
@@ -232,7 +236,11 @@ if( Object.keys(props.permanentRotationIncrement).length ) {
 
 			if( !axes.includes(key) ){ return }
 
-			buildTweenForPermanentRotation(key, 0, props.permanentRotationIncrement[key].angle)
+			buildTweenForPermanentRotation(
+				key, 
+				props.permanentRotationIncrement[key].angle.start, 
+				props.permanentRotationIncrement[key].angle.end
+			)
 
 		})
 
@@ -345,7 +353,7 @@ if( Object.keys(props.permanentRotationIncrement).length ) {
 					<Group v-if="isVisible">
 
 						<Box 
-							v-if="isPlane"
+							v-if="isContent"
 							:size="2.5" 
 							:rotation="animations.object3d.rotation"
 							:position="animations.object3d.position"
@@ -364,11 +372,9 @@ if( Object.keys(props.permanentRotationIncrement).length ) {
 							:rotation="animations.object3d.rotation"
 							:position="animations.object3d.position"
 						>
-							<PhongMaterial :props="{
-								side: THREE.DoubleSide
-							}">
+							<StandardMaterial>
 								<Texture :src="props.contentSource" />
-							</PhongMaterial>
+							</StandardMaterial>
 		
 						</Plane>
 
