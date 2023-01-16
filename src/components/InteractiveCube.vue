@@ -1,6 +1,6 @@
 <script setup>
 
-import { inject, ref, reactive, watch, onMounted } from 'vue'
+import { inject, ref, reactive, computed, watch, onMounted } from 'vue'
 
 import { TimelineLite } from "gsap";
 import { useHandleResize } from "../composables/handleResize"
@@ -46,41 +46,46 @@ const mainWrapper = ref(null)
 const renderEnabled = ref(false)
 const reduceItemSize = ref(false)
 
-let mouseX = 0 
-let mouseY = 0
+const mouseX = ref(props.mouseSensitive ? useMouseNormalised().x : 0)
+const mouseY = ref(props.mouseSensitive ? useMouseNormalised().y : 0)
+
 const cameraDeltaY = ref(0)
+
 const permanentRotationMoving = reactive({
 	x: 0,
 	y: 0,
 	z: 0
 })
-const animations = reactive({
-	object3d: {
-		rotation: {
-			x: Math.PI / 2 + mouseX + (permanentRotationMoving.x || 0),
-			y: Math.PI / 4 + mouseY + (permanentRotationMoving.y || 0),
-			z: Math.PI / 8 + (cameraDeltaY.value/ 100) + (permanentRotationMoving.z || 0)
-		},
-		position: {
-			x: 0,
-			y: 0,
-			z: (cameraDeltaY.value / 100) + mouseX + mouseY
-		}
-	},
-	light: {
-		first: {
-			position: {
-				x: 5 * Math.abs(cameraDeltaY.value / 100)
+
+const animations = computed( () => {
+	return {
+		object3d: {
+			rotation: {
+				x: Math.PI / 2 + mouseX.value + permanentRotationMoving.x,
+				y: Math.PI / 4 + mouseY.value + permanentRotationMoving.y,
+				z: Math.PI / 8 + (cameraDeltaY.value/ 100) + permanentRotationMoving.z
 			},
-			intensity: 1.5
-		},
-		second: {
 			position: {
-				x: 0.335,
-				y: 0.007,
-				z: (Math.abs(cameraDeltaY.value) / 10) * 1
+				x: 0,
+				y: 0,
+				z: (cameraDeltaY.value / 100) + mouseX.value + mouseY.value
+			}
+		},
+		light: {
+			first: {
+				position: {
+					x: 5 * Math.abs(cameraDeltaY.value / 100)
+				},
+				intensity: 1.5
 			},
-			intensity: 0.15 * (Math.abs(cameraDeltaY.value) / 10)
+			second: {
+				position: {
+					x: 0.335,
+					y: 0.007,
+					z: (Math.abs(cameraDeltaY.value) / 10) * 1
+				},
+				intensity: 0.15 * (Math.abs(cameraDeltaY.value) / 10)
+			}
 		}
 	}
 })
@@ -126,21 +131,6 @@ watch(rendererElementBoundings,
 	}
 )
 // * * * * * * * * * * *
-
-
-
-// * * * * Mouse Sensitive Logic :
-
-
-if( props.mouseSensitive ){
-	mouseX = useMouseNormalised().x
-	mouseY = useMouseNormalised().y
-} else {
-	mouseX = 0.000
-	mouseY = 0.000
-}
-// * * * * * * * * * * * * * * * * * * * 
-
 
 // * * * * * Scroll Logic 
 if( props.scrollSensitive ){
@@ -228,7 +218,6 @@ if( props.scrollSensitive ){
 // - - - - Permanent rotation logic
 const axes = ["x", "y", "z"]
 
-
 if( Object.keys(props.permanentRotationIncrement).length ) {
 
 	dispatchRotations()
@@ -299,11 +288,11 @@ if( Object.keys(props.permanentRotationIncrement).length ) {
 		
 		<p class="debug">
 
-			<div v-if="props.mouseSensitive">
+			<!-- <div v-if="props.mouseSensitive">
 				x: {{ mouseX.toFixed(3) }}
 				<br>
 				y: {{ mouseY.toFixed(3) }}
-			</div>
+			</div> -->
 
 			<button @click="reduceItemSize = !reduceItemSize">toggle main-cube-container width</button>
 		</p>
@@ -365,7 +354,7 @@ if( Object.keys(props.permanentRotationIncrement).length ) {
 						</Box>
 
 						<Plane 
-							v-if="props.contentType !== 'none'"
+							v-else
 							:size="6" 
 							:rotation="animations.object3d.rotation"
 							:position="animations.object3d.position"
