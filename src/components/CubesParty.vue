@@ -9,7 +9,7 @@ import InteractiveCube from "./InteractiveCube.vue"
 
 		<interactive-cube 
 			content-type="image"
-			content-source="https://media.istockphoto.com/id/1191719793/photo/3d-abstract-background-with-ultraviolet-neon-lights-empty-frame-cosmic-landscape-glowing.jpg?b=1&s=612x612&w=0&k=20&c=xV2aK40vtrlr_Bx8Rl9SDnWRDG3AUgRcYGKTeSTWP6k="
+			content-source="/src/assets/images/imageTest.jpeg"
 		
 			:mouse-sensitive="true"
 			:mouse-influence="{ x: 0.4, y: 0.2 }"

@@ -1,6 +1,6 @@
 <script setup>
 
-import { inject, ref, reactive, computed, watch, onMounted } from 'vue'
+import { inject, ref, reactive, computed, watch, onMounted, onBeforeMount } from 'vue'
 
 import { TimelineLite } from "gsap";
 import { useHandleResize } from "../composables/handleResize"
@@ -8,7 +8,7 @@ import { useMouseNormalised } from "../composables/mouseNormalized"
 import { useThrottleFn } from '@vueuse/core'
 import { useElementVisibility } from '@vueuse/core'
 
-import * as THREE from "three"
+// import * as THREE from "three"
 
 const props = defineProps({
 	contentType: {
@@ -50,8 +50,11 @@ const store = inject("STORE")
 const mainWrapper = ref(null)
 
 const isContent = props.contentType === 'none';
+const imageContent = new Image()
+
 const renderEnabled = ref(false)
 const reduceItemSize = ref(false)
+
 
 
 const mouseX = ref(props.mouseSensitive ? useMouseNormalised().x : 0)
@@ -97,6 +100,7 @@ const animations = computed( () => {
 		}
 	}
 })
+
 
 onMounted(() => {
 	
@@ -273,23 +277,15 @@ if( Object.keys(props.permanentRotationIncrement).length ) {
 
 }
 
-// * * * * Image / Video / None : logic : 
-// let imageToDisplay = new THREE.Texture(props.contentSource);
-// let videoToDisplay = new THREE.Texture(props.contentSource);
 
-// if( props.contentType === "image" ){
-// 	//
-// }
+// * * * * * Content logic
+if( props.contentSource ){
 
+	const forgedContentSource = window.location.origin + props.contentSource
+	imageContent.src = forgedContentSource
 
-
-
-// const videoTexture = new THREE.VideoTexture(this.video);
-// const screenMaterial = new THREE.MeshBasicMaterial({ 
-// 	map: videoTexture, 
-// 	side: THREE.FrontSide, 
-// 	toneMapped: false 
-// });
+}
+// * * * * * * * * * * *
 
 
 </script>
@@ -367,13 +363,16 @@ if( Object.keys(props.permanentRotationIncrement).length ) {
 
 						<Plane 
 							v-else
-							:size="12"
-							:scale="new Object({ x: 6, y: 6, z: 6 })"
+							:size="10"
+							:scale="new Object({ 
+								x: imageContent.width / 50, 
+								y: imageContent.height / 50
+							})"
 							:rotation="animations.object3d.rotation"
 							:position="animations.object3d.position"
 						>
 							<StandardMaterial>
-								<Texture :src="props.contentSource" />
+								<Texture :src="contentSource" />
 							</StandardMaterial>
 		
 						</Plane>
