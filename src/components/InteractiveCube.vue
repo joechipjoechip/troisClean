@@ -6,6 +6,7 @@ import { TimelineLite } from "gsap";
 import { useHandleResize } from "../composables/handleResize"
 import { useMouseNormalised } from "../composables/mouseNormalized"
 import { useThrottleFn } from '@vueuse/core'
+import { useElementVisibility } from '@vueuse/core'
 
 const props = defineProps({
 	mouseSensitive: {
@@ -32,6 +33,8 @@ const props = defineProps({
 
 const store = inject("STORE")
 
+const mainWrapper = ref(null)
+
 const renderEnabled = ref(false)
 const reduceItemSize = ref(false)
 
@@ -51,6 +54,8 @@ defineExpose({
 
 
 
+// * * * Visibility logic :
+const isVisible = useElementVisibility(mainWrapper)
 
 
 
@@ -58,13 +63,13 @@ defineExpose({
 const handleResizeThrolttled = useThrottleFn(handleResize, 150)
 const rendererElementBoundings = reactive({})
 
-const mainWrapper = ref(null)
+
 const rendererElement = ref(null)
 
 function handleResize(){
 	// console.log("handleResize")
-	rendererElementBoundings.width = mainWrapper.value.getBoundingClientRect().width
-	rendererElementBoundings.height = mainWrapper.value.getBoundingClientRect().height
+	rendererElementBoundings.width = mainWrapper.value?.getBoundingClientRect().width
+	rendererElementBoundings.height = mainWrapper.value?.getBoundingClientRect().height
 }
 
 useHandleResize(handleResizeThrolttled, mainWrapper)
@@ -242,7 +247,7 @@ if( Object.keys(props.permanentRotationIncrement).length ) {
 			<button @click="reduceItemSize = !reduceItemSize">toggle main-cube-container width</button>
 		</p>
 	
-		<div ref="mainWrapper" 
+		<div ref="mainWrapper"
 			class="main-wrapper"
 			:class="{ 'reduced': reduceItemSize }"
 		>
@@ -290,6 +295,7 @@ if( Object.keys(props.permanentRotationIncrement).length ) {
 					/>
 	
 					<Box 
+						v-if="isVisible"
 						:size="3" 
 						:rotation="{ 
 							x: Math.PI / 2 + mouseX + (permanentRotationMoving.x || 0),
@@ -306,20 +312,6 @@ if( Object.keys(props.permanentRotationIncrement).length ) {
 						<SubSurfaceMaterial />
 	
 					</Box>
-	
-					<EffectComposer>
-	
-						<UnrealBloomPass 
-							:strength="2"
-						/> 
-	
-	
-						<BokehPass 
-							:maxblur="0.8"
-						/>
-						<RenderPass />
-						
-					</EffectComposer>
 	
 				</Scene>
 	

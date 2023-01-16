@@ -4,7 +4,7 @@ import { useEventListener } from "@vueuse/core"
 
 export function useHandleResize( fn, element ) {
  
-    if( element ){
+    if( element.value ){
         // console.log("resize event set -> via resizeObserver on ", element)
 
         const resizeObserver = new ResizeObserver(() => {

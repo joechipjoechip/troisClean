@@ -5,8 +5,11 @@ import CubesParty from "./components/CubesParty.vue"
 import { watch, inject } from "vue"
 
 import { useScroll } from "@vueuse/core"
+import { useFps } from "@vueuse/core"
 
 const store = inject("STORE")
+
+const fps = useFps()
 
 
 // * * * * Scroll logic * * * * *
@@ -27,6 +30,10 @@ watch(
 
 <template>
 	<div class="app-wrapper">
+
+		<p class="debug-fps">
+			{{ fps }}
+		</p>
 	
 		<cubes-party />
 
@@ -36,15 +43,21 @@ watch(
 <style lang="scss">
 
 body {
-	padding: 0;
-	margin: 0;
-	color: white;
+  padding: 0;
+  margin: 0;
+  color: white;
 }
 
 .app {
-	&-wrapper {
-		background: url(./assets/images/wallpaper.jpg);
-		background-size: cover;
-	}
+  &-wrapper {
+    background: url(./assets/images/wallpaper.jpg);
+    background-size: cover;
+
+    .debug {
+      &-fps {
+        position: fixed;
+      }
+    }
+  }
 }
 </style>
