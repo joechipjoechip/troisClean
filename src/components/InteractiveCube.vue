@@ -9,6 +9,14 @@ import { useThrottleFn } from '@vueuse/core'
 import { useElementVisibility } from '@vueuse/core'
 
 const props = defineProps({
+	contentType: {
+		type: String,
+		default: "none"
+	},
+	contentSource: {
+		type: String,
+		default: ""
+	},
 	mouseSensitive: {
 		type: Boolean,
 		default: false
@@ -37,6 +45,45 @@ const mainWrapper = ref(null)
 
 const renderEnabled = ref(false)
 const reduceItemSize = ref(false)
+
+let mouseX = 0 
+let mouseY = 0
+const cameraDeltaY = ref(0)
+const permanentRotationMoving = reactive({
+	x: 0,
+	y: 0,
+	z: 0
+})
+const animations = reactive({
+	object3d: {
+		rotation: {
+			x: Math.PI / 2 + mouseX + (permanentRotationMoving.x || 0),
+			y: Math.PI / 4 + mouseY + (permanentRotationMoving.y || 0),
+			z: Math.PI / 8 + (cameraDeltaY.value/ 100) + (permanentRotationMoving.z || 0)
+		},
+		position: {
+			x: 0,
+			y: 0,
+			z: (cameraDeltaY.value / 100) + mouseX + mouseY
+		}
+	},
+	light: {
+		first: {
+			position: {
+				x: 5 * Math.abs(cameraDeltaY.value / 100)
+			},
+			intensity: 1.5
+		},
+		second: {
+			position: {
+				x: 0.335,
+				y: 0.007,
+				z: (Math.abs(cameraDeltaY.value) / 10) * 1
+			},
+			intensity: 0.15 * (Math.abs(cameraDeltaY.value) / 10)
+		}
+	}
+})
 
 onMounted(() => {
 	
@@ -67,7 +114,6 @@ const rendererElementBoundings = reactive({})
 const rendererElement = ref(null)
 
 function handleResize(){
-	// console.log("handleResize")
 	rendererElementBoundings.width = mainWrapper.value?.getBoundingClientRect().width
 	rendererElementBoundings.height = mainWrapper.value?.getBoundingClientRect().height
 }
@@ -84,7 +130,7 @@ watch(rendererElementBoundings,
 
 
 // * * * * Mouse Sensitive Logic :
-let mouseX, mouseY
+
 
 if( props.mouseSensitive ){
 	mouseX = useMouseNormalised().x
@@ -97,9 +143,6 @@ if( props.mouseSensitive ){
 
 
 // * * * * * Scroll Logic 
-
-const cameraDeltaY = ref(0)
-
 if( props.scrollSensitive ){
 
 	let tl = null
@@ -184,7 +227,7 @@ if( props.scrollSensitive ){
 
 // - - - - Permanent rotation logic
 const axes = ["x", "y", "z"]
-const permanentRotationMoving = reactive({})
+
 
 if( Object.keys(props.permanentRotationIncrement).length ) {
 
@@ -228,6 +271,24 @@ if( Object.keys(props.permanentRotationIncrement).length ) {
 	}
 
 }
+
+// * * * * Image / Video / None : logic : 
+// let imageToDisplay = new THREE.Texture(props.contentSource);
+// let videoToDisplay = new THREE.Texture(props.contentSource);
+
+// if( props.contentType === "image" ){
+// 	//
+// }
+
+
+
+
+// const videoTexture = new THREE.VideoTexture(this.video);
+// const screenMaterial = new THREE.MeshBasicMaterial({ 
+// 	map: videoTexture, 
+// 	side: THREE.FrontSide, 
+// 	toneMapped: false 
+// });
 
 
 </script>
@@ -277,41 +338,45 @@ if( Object.keys(props.permanentRotationIncrement).length ) {
 					<AmbientLight color="#30f1ff" :intensity="0.3" />
 	
 					<PointLight 
-						:position="{ 
-							x: 5 * Math.abs(cameraDeltaY / 100)
-						}" 
-						:intensity="1.5" 
+						:position="animations.light.first.position" 
+						:intensity="animations.light.first.intensity" 
 						color="#3100bb"
 					/>
 	
 					<PointLight 
-						:position="{ 
-							x: 0.335,
-							y: 0.007,
-							z: (Math.abs(cameraDeltaY) / 10) * 1
-						}" 
-						:intensity="0.15 * (Math.abs(cameraDeltaY) / 10)"
+						:position="animations.light.second.position" 
+						:intensity="animations.light.second.intensity"
 						color="#00FF00"
 					/>
-	
-					<Box 
-						v-if="isVisible"
-						:size="3" 
-						:rotation="{ 
-							x: Math.PI / 2 + mouseX + (permanentRotationMoving.x || 0),
-							y: Math.PI / 4 + mouseY + (permanentRotationMoving.y || 0),
-							z: Math.PI / 8 + (cameraDeltaY / 100) + (permanentRotationMoving.z || 0)
-						}"
-						:position="{
-							z: (cameraDeltaY / 100) + mouseX + mouseY
-						}"
-					>
-	
-						<!-- <SubSurfaceMaterial /> -->
-						<!-- <ToonMaterial /> -->
-						<SubSurfaceMaterial />
-	
-					</Box>
+
+					<Group v-if="isVisible">
+
+						<Box 
+							v-if="props.contentType === 'none'"
+							:size="3" 
+							:rotation="animations.object3d.rotation"
+							:position="animations.object3d.position"
+						>
+		
+							<!-- <SubSurfaceMaterial /> -->
+							<!-- <ToonMaterial /> -->
+							<SubSurfaceMaterial />
+		
+						</Box>
+
+						<Plane 
+							v-if="props.contentType !== 'none'"
+							:size="6" 
+							:rotation="animations.object3d.rotation"
+							:position="animations.object3d.position"
+						>
+							<PhongMaterial>
+								<Texture :src="props.contentSource" />
+							</PhongMaterial>
+		
+						</Plane>
+
+					</Group>
 	
 				</Scene>
 	
