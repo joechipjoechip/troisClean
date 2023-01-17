@@ -8,37 +8,38 @@ import InteractiveCube from "./InteractiveCube.vue"
 	<div>
 
 		<interactive-cube 
-			content-type="image"
 			content-source="/src/assets/images/imageTest.jpeg"
 		
 			:mouse-sensitive="true"
-			:mouse-influence="{ x: 0.4, y: 0.2 }"
+			:mouse-influence="{ x: 0.1, y: 0.02 }"
 			:scroll-sensitive="true"
-			:scroll-anim-duration="0.4"
-			:scroll-anim-delta="8"
+			:scroll-anim-duration="0.8"
+			:scroll-anim-delta="3"
 			
 			:permanent-rotation-increment="{ 
 				y: { 
 					angle: {
-						start: -Math.PI / 8,
-						end: Math.PI / 8
+						start: -Math.PI / 22,
+						end: Math.PI / 22
 					}, 
 					duration: 4 
 				},
 				z: { 
 					angle: {
-						start: -Math.PI / 16,
-						end: Math.PI / 16
+						start: -Math.PI / 26,
+						end: Math.PI / 26
 					}, 
-					duration: 1.5
+					duration: 15
 				},
 			}"
 			
 		/>
 
 		<interactive-cube 
+			content-source="/src/assets/models/eclair.gltf"
+
 			:mouse-sensitive="true"
-			:mouse-influence="{ x: 0.4, y: 0.2 }"
+			:mouse-influence="{ x: -0.6, y: -0.6 }"
 			:scroll-sensitive="true"
 			:scroll-anim-duration="0.4"
 			:scroll-anim-delta="8"
@@ -54,12 +55,11 @@ import InteractiveCube from "./InteractiveCube.vue"
 				y: { 
 					angle: {
 						start: -Math.PI / 8,
-						end: Math.PI / 8
+						end: Math.PI * 8
 					}, 
-					duration: 4 
+					duration: 9
 				}
 			}"
-			
 		/>
 
 		<interactive-cube  

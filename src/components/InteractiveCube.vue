@@ -1,20 +1,19 @@
 <script setup>
 
-import { inject, ref, reactive, computed, watch, onMounted, onBeforeMount } from 'vue'
+import InteractiveCubeInner from "./InteractiveCubeInner.vue"
+
+import { inject, ref, reactive, computed, watch, onMounted } from 'vue'
 
 import { TimelineLite } from "gsap";
 import { useHandleResize } from "../composables/handleResize"
 import { useMouseNormalised } from "../composables/mouseNormalized"
+import { useExtensionDetector } from "../composables/extensionDetector"
 import { useThrottleFn } from '@vueuse/core'
 import { useElementVisibility } from '@vueuse/core'
 
 // import * as THREE from "three"
 
 const props = defineProps({
-	contentType: {
-		type: String,
-		default: "none"
-	},
 	contentSource: {
 		type: String,
 		default: ""
@@ -42,6 +41,10 @@ const props = defineProps({
 	scrollAnimDelta: {
 		type: Number,
 		default: 5
+	},
+	modelSrc: {
+		type: String,
+		default: ""
 	}
 })
 
@@ -49,13 +52,8 @@ const store = inject("STORE")
 
 const mainWrapper = ref(null)
 
-const isContent = props.contentType === 'none';
-const imageContent = new Image()
-
 const renderEnabled = ref(false)
 const reduceItemSize = ref(false)
-
-
 
 const mouseX = ref(props.mouseSensitive ? useMouseNormalised().x : 0)
 const mouseY = ref(props.mouseSensitive ? useMouseNormalised().y : 0)
@@ -120,8 +118,6 @@ defineExpose({
 
 // * * * Visibility logic :
 const isVisible = useElementVisibility(mainWrapper)
-
-
 
 // * * * Resize Logic :
 const handleResizeThrolttled = useThrottleFn(handleResize, 150)
@@ -190,7 +186,7 @@ if( props.scrollSensitive ){
 	function buildTween(destinationY){
 
 		const isStop = destinationY === 0
-		let tweenDuration = isStop ? props.scrollAnimDuration * 6 : props.scrollAnimDuration
+		let tweenDuration = isStop ? props.scrollAnimDuration * 3 : props.scrollAnimDuration
 
 		if( tl ){
 			tl.kill()
@@ -279,11 +275,12 @@ if( Object.keys(props.permanentRotationIncrement).length ) {
 
 
 // * * * * * Content logic
-if( props.contentSource ){
+const isContent = ref(false)
+const contentType = ref("none")
 
-	const forgedContentSource = window.location.origin + props.contentSource
-	imageContent.src = forgedContentSource
-
+if( props.contentSource !== "" ){
+	isContent.value = true
+	contentType.value = useExtensionDetector(props.contentSource)
 }
 // * * * * * * * * * * *
 
@@ -295,12 +292,6 @@ if( props.contentSource ){
 	<div class="main-cube-container">
 		
 		<p class="debug">
-
-			<!-- <div v-if="props.mouseSensitive">
-				x: {{ mouseX.toFixed(3) }}
-				<br>
-				y: {{ mouseY.toFixed(3) }}
-			</div> -->
 
 			<button @click="reduceItemSize = !reduceItemSize">toggle main-cube-container width</button>
 		</p>
@@ -318,68 +309,16 @@ if( props.contentSource ){
 				:width="new String(rendererElementBoundings.width)"
 				:height="new String(rendererElementBoundings.height)"
 			>
-			<!-- we use 'new String() constructor because only string are expected for theses attributes' -->
-			<!-- :orbit-ctrl="{ enableDamping: true }"  -->
-	
-				<Camera 
-					:position="{ 
-						z: 10,
-						y: scrollInfluenceCameraY
-					}" 
-					:far="30"
-					:lookAt="new Object({ x: 0, y: 0, z: 0 })"
+
+				<interactive-cube-inner
+					:isContent="isContent"
+					:contentSource="contentSource"
+					:contentType="contentType"
+
+					:isVisible="isVisible"
+					:animations="animations"
+					:scrollInfluenceCameraY="scrollInfluenceCameraY"
 				/>
-	
-				<Scene>
-	
-					<AmbientLight color="#30f1ff" :intensity="0.3" />
-	
-					<PointLight 
-						:position="animations.light.first.position" 
-						:intensity="animations.light.first.intensity" 
-						color="#3100bb"
-					/>
-	
-					<PointLight 
-						:position="animations.light.second.position" 
-						:intensity="animations.light.second.intensity"
-						color="#00FF00"
-					/>
-
-					<Group v-if="isVisible">
-
-						<Box 
-							v-if="isContent"
-							:size="2.5" 
-							:rotation="animations.object3d.rotation"
-							:position="animations.object3d.position"
-						>
-		
-							<!-- <SubSurfaceMaterial /> -->
-							<!-- <ToonMaterial /> -->
-							<SubSurfaceMaterial />
-		
-						</Box>
-
-						<Plane 
-							v-else
-							:size="10"
-							:scale="new Object({ 
-								x: imageContent.width / 50, 
-								y: imageContent.height / 50
-							})"
-							:rotation="animations.object3d.rotation"
-							:position="animations.object3d.position"
-						>
-							<StandardMaterial>
-								<Texture :src="contentSource" />
-							</StandardMaterial>
-		
-						</Plane>
-
-					</Group>
-	
-				</Scene>
 	
 			</Renderer>
 	
