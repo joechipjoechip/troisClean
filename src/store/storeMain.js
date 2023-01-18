@@ -5,7 +5,6 @@ export const store = reactive({
 		scroll: {
 			isScrolling: false,
 			directions: {},
-			influence: 0
 		}
 	}
 })

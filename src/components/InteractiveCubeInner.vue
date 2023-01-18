@@ -1,6 +1,6 @@
 <script setup>
 
-import { reactive } from "vue"
+import { inject, watch } from "vue"
 
 import { TimelineLite } from "gsap"
 
@@ -17,6 +17,10 @@ const props = defineProps({
 		type: Object,
 		required: true
 	},
+	scrollInfluenceCameraY: {
+		type: Number,
+		default: 0
+	},
 	contentSource: {
 		type: String,
 		default: ""
@@ -25,41 +29,47 @@ const props = defineProps({
 		type: String,
 		default: ""
 	},
-	scrollInfluenceCameraY: {
-		type: Number,
-		default: 0
-	},
 	mousePosition: {
 		type: Object,
 		default: { x: 0, y: 0 }
 	}
 })
 
+const store = inject("STORE")
+
 const fragmentShader = `
 uniform sampler2D myTextureOne;
 uniform sampler2D myTextureTwo;
 uniform float uProgress;
-uniform vec2 uMouse;
 
 varying vec2 vUv;
+varying float vScrollInfluence;
 
 void main() {
   vec4 image1 = texture2D(myTextureOne, vUv);
   vec4 image2 = texture2D(myTextureTwo, vUv);
-  gl_FragColor = mix(image1, image2, uMouse.x);
+  gl_FragColor = mix(image1, image2, uProgress);
 }
 `
 
 const vertexShader = `
+uniform float uScrollInfluence;
+uniform vec2 uMouse;
+
 varying vec2 vUv;
+varying float vScrollInfluence;
 
 void main()
 {
 	gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 
 	vUv = uv;
+
+	vScrollInfluence = uScrollInfluence;
+
 }
 `
+// ici traitements vénère pour faire un truc cool avec vScrollInfluence
 
 
 
@@ -69,13 +79,16 @@ const imageContent = new Image()
 const animatedObject = { progress: 0 }
 const uniforms = { 
 	uProgress: { 
-		value: 0
+		value: 0.0
 	},
 	uMouse: {
 		value: {
 			x: 0,
 			y: 0
 		}
+	},
+	uScrollInfluence: {
+		value: 0.0
 	}
 }
 let tl
@@ -105,8 +118,8 @@ function handleImageClick( event ){
 			onUpdate: () => {
 				console.log("onUpdate : ", uniforms.uMouse.value.x)
 				uniforms.uProgress.value = animatedObject.progress
-				uniforms.uMouse.value.x = props.mousePosition.x
-				uniforms.uMouse.value.y = props.mousePosition.y
+				// uniforms.uMouse.value.x = props.mousePosition.x
+				// uniforms.uMouse.value.y = props.mousePosition.y
 			},
 			
 			onComplete: () => {
@@ -117,6 +130,12 @@ function handleImageClick( event ){
 	);
 
 }
+
+// watch(
+// 	() => store.userInteractions.scrollInfluence, 
+// 	newVal => uniforms.uScrollInfluence.value = newVal / 10
+	
+// )
 
 
 
@@ -150,7 +169,8 @@ function gltfOnProgress( event ){
 
 	<Scene>
 
-		<canvas style="display: none"></canvas>
+		<!-- éventuellement pour faire du canvasTexture -->
+		<!-- <canvas style="display: none"></canvas> -->
 
 		<AmbientLight color="#30f1ff" :intensity="0.3" />
 
@@ -170,15 +190,8 @@ function gltfOnProgress( event ){
 						:position="animations.object3d.position"
 						@click="handleImageClick"
 					>
-						<!-- <BasicMaterial>
-							<Texture :src="contentSource" />
-						</BasicMaterial> -->
 
-						<ShaderMaterial :props="{
-							fragmentShader, 
-							vertexShader,
-							uniforms
-						}">
+						<ShaderMaterial :props="{ fragmentShader, vertexShader, uniforms }">
 							<Texture :src="contentSource" uniform="myTextureOne"/>
 							<Texture :src="contentSource.replace('imageTest.jpeg', 'wallpaper.jpg')" uniform="myTextureTwo"/>
 						</ShaderMaterial>
