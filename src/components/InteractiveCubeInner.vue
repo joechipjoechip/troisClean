@@ -1,5 +1,9 @@
 <script setup>
 
+import { reactive } from "vue"
+
+import { TimelineLite } from "gsap"
+
 const props = defineProps({
 	isVisible: {
 		type: Boolean,
@@ -24,15 +28,94 @@ const props = defineProps({
 	scrollInfluenceCameraY: {
 		type: Number,
 		default: 0
+	},
+	mousePosition: {
+		type: Object,
+		default: { x: 0, y: 0 }
 	}
 })
+
+const fragmentShader = `
+uniform sampler2D myTextureOne;
+uniform sampler2D myTextureTwo;
+uniform float uProgress;
+uniform vec2 uMouse;
+
+varying vec2 vUv;
+
+void main() {
+  vec4 image1 = texture2D(myTextureOne, vUv);
+  vec4 image2 = texture2D(myTextureTwo, vUv);
+  gl_FragColor = mix(image1, image2, uMouse.x);
+}
+`
+
+const vertexShader = `
+varying vec2 vUv;
+
+void main()
+{
+	gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+
+	vUv = uv;
+}
+`
+
+
 
 
 // * * * * Content logic
 const imageContent = new Image()
+const animatedObject = { progress: 0 }
+const uniforms = { 
+	uProgress: { 
+		value: 0
+	},
+	uMouse: {
+		value: {
+			x: 0,
+			y: 0
+		}
+	}
+}
+let tl
 
 if( props.contentType === "image" ){
 	imageContent.src = props.contentSource
+}
+
+function handleImageClick( event ){
+	console.log("image clicked")
+
+	if( tl ){
+		tl.kill()
+		animatedObject.progress = 0
+		tl = null
+	}
+	
+	tl = new TimelineLite()
+
+	tl.to(
+		animatedObject, 
+		{
+			duration: 2, 
+			progress : 1,
+			ease: "easeIn",
+
+			onUpdate: () => {
+				console.log("onUpdate : ", uniforms.uMouse.value.x)
+				uniforms.uProgress.value = animatedObject.progress
+				uniforms.uMouse.value.x = props.mousePosition.x
+				uniforms.uMouse.value.y = props.mousePosition.y
+			},
+			
+			onComplete: () => {
+				tl = null
+				animatedObject.progress = 0
+			}
+		}
+	);
+
 }
 
 
@@ -67,35 +150,13 @@ function gltfOnProgress( event ){
 
 	<Scene>
 
+		<canvas style="display: none"></canvas>
+
 		<AmbientLight color="#30f1ff" :intensity="0.3" />
 
 		<Group v-if="isVisible">
 
-			<Group v-if="!isContent">
-
-				<PointLight 
-					:position="animations.light.first.position" 
-					:intensity="animations.light.first.intensity" 
-					color="#3100bb"
-				/>
-
-				<PointLight 
-					:position="animations.light.second.position" 
-					:intensity="animations.light.second.intensity"
-					color="#00FF00"
-				/>
-
-				<Box 
-					:size="2.5" 
-					:rotation="animations.object3d.rotation"
-					:position="animations.object3d.position"
-				>
-					<SubSurfaceMaterial />
-				</Box>
-
-			</Group>
-
-			<Group v-else>
+			<Group v-if="isContent">
 
 				<Group v-if="props.contentType === 'image'">
 
@@ -107,16 +168,20 @@ function gltfOnProgress( event ){
 						})"
 						:rotation="animations.object3d.rotation"
 						:position="animations.object3d.position"
+						@click="handleImageClick"
 					>
-						<BasicMaterial>
+						<!-- <BasicMaterial>
 							<Texture :src="contentSource" />
-						</BasicMaterial>
+						</BasicMaterial> -->
 
-						<!-- <ShaderMaterial :props="{ 
-							fragmentShader, vertexShader
+						<ShaderMaterial :props="{
+							fragmentShader, 
+							vertexShader,
+							uniforms
 						}">
-							<Texture src="contentSource" uniform="myCustomTexture"/>
-						</ShaderMaterial> -->
+							<Texture :src="contentSource" uniform="myTextureOne"/>
+							<Texture :src="contentSource.replace('imageTest.jpeg', 'wallpaper.jpg')" uniform="myTextureTwo"/>
+						</ShaderMaterial>
 
 					</Plane>
 
@@ -149,7 +214,29 @@ function gltfOnProgress( event ){
 
 				</Group>
 
-				
+			</Group>
+
+			<Group v-else>
+
+				<PointLight 
+					:position="animations.light.first.position" 
+					:intensity="animations.light.first.intensity" 
+					color="#3100bb"
+				/>
+
+				<PointLight 
+					:position="animations.light.second.position" 
+					:intensity="animations.light.second.intensity"
+					color="#00FF00"
+				/>
+
+				<Box 
+					:size="2.5" 
+					:rotation="animations.object3d.rotation"
+					:position="animations.object3d.position"
+				>
+					<SubSurfaceMaterial />
+				</Box>
 
 			</Group>
 

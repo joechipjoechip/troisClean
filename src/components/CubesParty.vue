@@ -16,7 +16,7 @@ import InteractiveCube from "./InteractiveCube.vue"
 			:scroll-anim-duration="0.8"
 			:scroll-anim-delta="3"
 			
-			:permanent-rotation-increment="{ 
+			:permanent-rotation-increment="{
 				y: { 
 					angle: {
 						start: -Math.PI / 22,

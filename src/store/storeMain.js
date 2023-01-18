@@ -4,7 +4,8 @@ export const store = reactive({
 	userInteractions: {
 		scroll: {
 			isScrolling: false,
-			directions: {}
+			directions: {},
+			influence: 0
 		}
 	}
 })

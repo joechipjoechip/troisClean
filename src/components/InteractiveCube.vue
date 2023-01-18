@@ -318,6 +318,8 @@ if( props.contentSource !== "" ){
 					:isVisible="isVisible"
 					:animations="animations"
 					:scrollInfluenceCameraY="scrollInfluenceCameraY"
+
+					:mousePosition="{ x: mouseX, y: mouseY }"
 				/>
 	
 			</Renderer>
