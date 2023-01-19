@@ -65,6 +65,30 @@ import InteractiveCube from "./InteractiveCube.vue"
 		<interactive-cube  
 			:mouse-sensitive="true"
 			:scroll-sensitive="true"
+			:scroll-anim-duration="1.5"
+			:scroll-anim-delta="12"
+
+			:permanent-rotation-increment="{ 
+				y: { 
+					angle: {
+						start: -Math.PI / 8,
+						end: Math.PI / 8
+					}, 
+					duration: 4 
+				},
+				z: { 
+					angle: {
+						start: -Math.PI / 2,
+						end: Math.PI * 4
+					}, 
+					duration: 1.5
+				},
+			}"
+		/>
+
+		<interactive-cube  
+			:mouse-sensitive="true"
+			:scroll-sensitive="true"
 			:scroll-anim-duration="0.5"
 			:scroll-anim-delta="17"
 

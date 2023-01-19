@@ -1,6 +1,9 @@
 <script setup>
 
-import { inject, watch } from "vue"
+import { inject } from "vue"
+
+import { fragmentShader } from "./../shaders/fragment.js";
+import { vertexShader } from "./../shaders/vertex.js";
 
 import { TimelineLite } from "gsap"
 
@@ -37,38 +40,38 @@ const props = defineProps({
 
 const store = inject("STORE")
 
-const fragmentShader = `
-uniform sampler2D myTextureOne;
-uniform sampler2D myTextureTwo;
-uniform float uProgress;
+// const fragmentShader = `
+// uniform sampler2D myTextureOne;
+// uniform sampler2D myTextureTwo;
+// uniform float uProgress;
 
-varying vec2 vUv;
-varying float vScrollInfluence;
+// varying vec2 vUv;
+// varying float vScrollInfluence;
 
-void main() {
-  vec4 image1 = texture2D(myTextureOne, vUv);
-  vec4 image2 = texture2D(myTextureTwo, vUv);
-  gl_FragColor = mix(image1, image2, uProgress);
-}
-`
+// void main() {
+//   vec4 image1 = texture2D(myTextureOne, vUv);
+//   vec4 image2 = texture2D(myTextureTwo, vUv);
+//   gl_FragColor = mix(image1, image2, uProgress);
+// }
+// `
 
-const vertexShader = `
-uniform float uScrollInfluence;
-uniform vec2 uMouse;
+// const vertexShader = `
+// uniform float uScrollInfluence;
+// uniform vec2 uMouse;
 
-varying vec2 vUv;
-varying float vScrollInfluence;
+// varying vec2 vUv;
+// varying float vScrollInfluence;
 
-void main()
-{
-	gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+// void main()
+// {
+// 	gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 
-	vUv = uv;
+// 	vUv = uv;
 
-	vScrollInfluence = uScrollInfluence;
+// 	vScrollInfluence = uScrollInfluence;
 
-}
-`
+// }
+// `
 // ici traitements vénère pour faire un truc cool avec vScrollInfluence
 
 
@@ -181,7 +184,8 @@ function gltfOnProgress( event ){
 				<Group v-if="props.contentType === 'image'">
 
 					<Plane 
-						:size="10"
+						:widthSegments="20"
+						:heightSegments="20"
 						:scale="new Object({ 
 							x: imageContent.width / 50, 
 							y: imageContent.height / 50
@@ -191,7 +195,7 @@ function gltfOnProgress( event ){
 						@click="handleImageClick"
 					>
 
-						<ShaderMaterial :props="{ fragmentShader, vertexShader, uniforms }">
+						<ShaderMaterial :props="{ fragmentShader, vertexShader, uniforms, wireframe: true }">
 							<Texture :src="contentSource" uniform="myTextureOne"/>
 							<Texture :src="contentSource.replace('imageTest.jpeg', 'wallpaper.jpg')" uniform="myTextureTwo"/>
 						</ShaderMaterial>
