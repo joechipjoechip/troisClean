@@ -52,8 +52,8 @@ const store = inject("STORE")
 
 const mainWrapper = ref(null)
 
-const renderEnabled = ref(false)
-const reduceItemSize = ref(false)
+const renderIsEnabled = ref(false)
+const itemSizeIsReduced = ref(false)
 
 const mouseX = ref(props.mouseSensitive ? useMouseNormalised().x : 0)
 const mouseY = ref(props.mouseSensitive ? useMouseNormalised().y : 0)
@@ -102,14 +102,14 @@ const animations = computed( () => {
 
 onMounted(() => {
 	
-	renderEnabled.value = true
+	renderIsEnabled.value = true
 
 	handleResize()
 
 })
 
 defineExpose({ 
-	renderEnabled 
+	renderIsEnabled 
 })
 
 // * * * * * * * * * * * * * * * * * * * * * * end of main stuffs * - * - *
@@ -293,16 +293,16 @@ if( props.contentSource !== "" ){
 		
 		<p class="debug">
 
-			<button @click="reduceItemSize = !reduceItemSize">toggle main-cube-container width</button>
+			<button @click="itemSizeIsReduced = !itemSizeIsReduced">toggle main-cube-container width</button>
 		</p>
 	
 		<div ref="mainWrapper"
 			class="main-wrapper"
-			:class="{ 'reduced': reduceItemSize }"
+			:class="{ 'reduced': itemSizeIsReduced }"
 		>
 	
 			<Renderer  
-				v-if="renderEnabled"
+				v-if="renderIsEnabled"
 				ref="rendererElement"
 				antialias
 				:alpha="true"
