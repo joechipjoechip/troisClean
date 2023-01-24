@@ -1,9 +1,9 @@
 <script setup>
 
-import { inject } from "vue"
+import { inject, watch } from "vue"
 
-import { fragmentShader } from "./../shaders/fragment.js";
 import { vertexShader } from "./../shaders/vertex.js";
+import { fragmentShader } from "./../shaders/fragment.js";
 
 import { TimelineLite } from "gsap"
 
@@ -84,10 +84,7 @@ function handleImageClick( event ){
 			ease: "easeIn",
 
 			onUpdate: () => {
-				console.log("onUpdate : ", uniforms.uMouse.value.x)
 				uniforms.uProgress.value = animatedObject.progress
-				// uniforms.uMouse.value.x = props.mousePosition.x
-				// uniforms.uMouse.value.y = props.mousePosition.y
 			},
 			
 			onComplete: () => {
@@ -99,11 +96,27 @@ function handleImageClick( event ){
 
 }
 
-// watch(
-// 	() => store.userInteractions.scrollInfluence, 
-// 	newVal => uniforms.uScrollInfluence.value = newVal / 10
+watch(
+	() => props.scrollInfluenceCameraY, 
+	newVal => {
+		// console.log("watch de scrollInfluenceCameraY")
+		uniforms.uScrollInfluence.value = newVal
+	}
+)
+
+// @TODO : maybe a better way to bind thoses
+// maybe with https://vueuse.org/shared/createsharedcomposable/
+watch(
+	[() => props.mousePosition.x, () => props.mousePosition.y],
+	([newValX, newValY]) => {
+
+		// console.log("watch de mouse : ", newValX, newValY)
+
+		uniforms.uMouse.value.x = newValX
+		uniforms.uMouse.value.y = newValY
+	}
 	
-// )
+)
 
 
 
@@ -149,8 +162,8 @@ function gltfOnProgress( event ){
 				<Group v-if="props.contentType === 'image'">
 
 					<Plane 
-						:widthSegments="20"
-						:heightSegments="20"
+						:widthSegments="30"
+						:heightSegments="30"
 						:scale="new Object({ 
 							x: imageContent.width / 50, 
 							y: imageContent.height / 50
@@ -160,9 +173,15 @@ function gltfOnProgress( event ){
 						@click="handleImageClick"
 					>
 
-						<ShaderMaterial :props="{ fragmentShader, vertexShader, uniforms, wireframe: true }">
-							<Texture :src="contentSource" uniform="myTextureOne"/>
-							<Texture :src="contentSource.replace('imageTest.jpeg', 'wallpaper.jpg')" uniform="myTextureTwo"/>
+						<ShaderMaterial :props="{ 
+							fragmentShader, 
+							vertexShader, 
+							uniforms, 
+							wireframe: false 
+						}">
+							<Texture :src="contentSource" uniform="texture1"/>
+							<Texture :src="contentSource.replace('imageTest.jpeg', 'wallpaper.jpg')" uniform="texture2"/>
+							<Texture src="/src/assets/images/mask.jpg" uniform="mask"/>
 						</ShaderMaterial>
 
 					</Plane>

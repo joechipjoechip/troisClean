@@ -8,34 +8,6 @@ import InteractiveCube from "./InteractiveCube.vue"
 	<div>
 
 		<interactive-cube 
-			content-source="/src/assets/images/imageTest.jpeg"
-		
-			:mouse-sensitive="true"
-			:mouse-influence="{ x: 0.1, y: 0.02 }"
-			:scroll-sensitive="true"
-			:scroll-anim-duration="0.8"
-			:scroll-anim-delta="3"
-			
-			:permanent-rotation-increment="{
-				y: { 
-					angle: {
-						start: -Math.PI / 22,
-						end: Math.PI / 22
-					}, 
-					duration: 4 
-				},
-				z: { 
-					angle: {
-						start: -Math.PI / 26,
-						end: Math.PI / 26
-					}, 
-					duration: 15
-				},
-			}"
-			
-		/>
-
-		<interactive-cube 
 			content-source="/src/assets/models/eclair.gltf"
 
 			:mouse-sensitive="true"
@@ -60,6 +32,16 @@ import InteractiveCube from "./InteractiveCube.vue"
 					duration: 9
 				}
 			}"
+		/>
+
+		<interactive-cube 
+			content-source="/src/assets/images/imageTest.jpeg"
+		
+			:mouse-sensitive="true"
+			:mouse-influence="{ x: 0.1, y: 0.02 }"
+			:scroll-sensitive="true"
+			:scroll-anim-duration="0.8"
+			:scroll-anim-delta="3"
 		/>
 
 		<interactive-cube  
