@@ -1,6 +1,7 @@
 <script setup>
 
 import CubesParty from "./components/CubesParty.vue"
+import Cover from "./components/Cover.vue"
 
 import { watch, inject } from "vue"
 
@@ -34,6 +35,8 @@ watch(
 		<p class="debug-fps">
 			{{ fps }}
 		</p>
+
+    <cover />
 	
 		<cubes-party />
 
@@ -41,16 +44,25 @@ watch(
 </template>
 
 <style lang="scss">
+@import "./assets/fonts/rubik/stylesheet.css";
+
+:root {
+  --color-main-bg: #000;
+}
 
 body {
   padding: 0;
   margin: 0;
   color: white;
+
+  font-family: "Rubik";
+
 }
 
 .app {
   &-wrapper {
-    background: url(./assets/images/wallpaper.jpg);
+    // background: url(./assets/images/wallpaper.jpg);
+    background-color: var(--color-main-bg);
     background-size: cover;
 
     .debug {
