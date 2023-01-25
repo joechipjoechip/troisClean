@@ -48,6 +48,10 @@ watch(
 
 :root {
   --color-main-bg: #000;
+  --color-glass-shadow-out: rgba(0,0,0, 0.2);
+  --color-glass-shadow-in: rgba(255,255,255, 0.2);
+
+  --border-radius-base: 1rem;
 }
 
 body {
@@ -57,19 +61,34 @@ body {
 
   font-family: "Rubik";
 
+  .no-scroll {
+		overflow: hidden;
+	}
+
+	* {
+		-webkit-tap-highlight-color: transparent;
+	}
+
 }
 
 .app {
   &-wrapper {
-    // background: url(./assets/images/wallpaper.jpg);
     background-color: var(--color-main-bg);
-    background-size: cover;
+    background: url(./assets/images/wallpaper.jpg);
+    // background-size: cover;
 
     .debug {
       &-fps {
         position: fixed;
       }
     }
+  }
+}
+
+.font {
+  &-big {
+    font-size: 3rem;
+    font-weight: 800;
   }
 }
 </style>

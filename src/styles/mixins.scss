@@ -1,0 +1,7 @@
+@mixin glass-base {
+	backdrop-filter: blur(10px);
+	border: solid 1px var(--color-glass-shadow-in);
+	border-radius: var(--border-radius-base);
+	box-shadow: 0 0 55px var(--color-glass-shadow-out),
+				inset 0 0 55px var(--color-glass-shadow-in);
+}
